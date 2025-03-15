@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+logs/**/*.log
+debug.log
+error.log
+
+# Database
+dump/
+data/
+*.sqlite
+*.sqlite3
+*.db
+*.tgz
+
+# Build files
+dist/
+build/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime
