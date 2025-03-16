@@ -9,10 +9,20 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const { platform } = req.query;
-    const filter = platform ? { platform: { $in: platform.split(',') } } : {};
+    const currentTime = new Date(); // Get current time
+
+    // Build filter
+    const filter = {
+      startTime: { $gte: currentTime }, // Fetch only contests that haven't started yet
+      ...(platform ? { platform: { $in: platform.split(',') } } : {}),
+    };
+
+    // Fetch contests sorted by startTime in ascending order
     const contests = await Contest.find(filter).sort({ startTime: 1 });
+
     res.json(contests);
   } catch (error) {
+    console.error("Error fetching contests:", error);
     res.status(500).json({ error: 'Server Error' });
   }
 });
