@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import contestRoutes from './routes/contestRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 import { startContestUpdater } from './services/contestService.js';
 
 dotenv.config();
@@ -17,9 +18,10 @@ app.use(cors());
 connectDB();
 
 // API Routes
-app.use('/api/contests', contestRoutes);
+app.use('/api/contests', contestRoutes); // Contests API
+app.use('/api/auth', authRoutes); // Authentication API
 
 // Start periodic contest fetching
-startContestUpdater();
+// startContestUpdater();
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -8,4 +8,5 @@ const ContestSchema = new mongoose.Schema({
   endTime: { type: Date, required: true },
 });
 
-export default mongoose.model('Contest', ContestSchema);
+const Contest = mongoose.model('Contest', ContestSchema);
+export default Contest;
