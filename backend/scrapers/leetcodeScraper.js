@@ -1,38 +1,61 @@
 import axios from "axios";
 
+const LEETCODE_BASE_URL = "https://leetcode.com/contest/";
+const LEETCODE_API = "https://leetcode.com/graphql";
+
 const fetchLeetcodeContests = async () => {
   try {
-    const response = await axios.get("https://leetcode.com/contest/api/list/", {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
-    });
+    const [upcomingResponse, pastResponse] = await Promise.all([
+      axios.post(
+        LEETCODE_API,
+        {
+          query: `{
+            upcomingContests {
+              title
+              titleSlug
+              startTime
+              duration
+            }
+          }`,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      ),
+      axios.post(
+        LEETCODE_API,
+        {
+          operationName: "pastContests",
+          query: `query pastContests($pageNo: Int, $numPerPage: Int) {
+            pastContests(pageNo: $pageNo, numPerPage: $numPerPage) {
+              data {
+                title
+                titleSlug
+                startTime
+                duration
+              }
+            }
+          }`,
+          variables: { pageNo: 1, numPerPage: 10 },
+        },
+        { headers: { "Content-Type": "application/json" } }
+      ),
+    ]);
 
-    console.log("LeetCode API Response:", response.data);
-
-    if (!response.data || !response.data.contests) {
+    if (!upcomingResponse.data?.data?.upcomingContests && !pastResponse.data?.data?.pastContests?.data) {
       throw new Error("Invalid response format from LeetCode API");
     }
 
-    return response.data.contests.map((contest) => {
-      const startTime = contest.start_time ? new Date(contest.start_time * 1000) : null;
-      const endTime = contest.start_time ? new Date((contest.start_time + contest.duration) * 1000) : null;
+    const upcomingContests = upcomingResponse?.data?.data?.upcomingContests || [];
+    const pastContests = pastResponse?.data?.data?.pastContests?.data || [];
 
-      if (!startTime || !endTime) {
-        console.warn("⚠️ Skipping invalid contest:", contest);
-        return null;
-      }
-
-      return {
-        name: contest.title,
-        url: `https://leetcode.com/contest/${contest.titleSlug}`,
-        start_time: startTime,
-        end_time: endTime,
-        platform: "LeetCode",
-      };
-    }).filter(Boolean);
+    return [...upcomingContests, ...pastContests].map((contest) => ({
+      name: contest.title,
+      url: `${LEETCODE_BASE_URL}${contest.titleSlug}`,
+      start_time: new Date(contest.startTime * 1000),
+      end_time: new Date((contest.startTime + contest.duration) * 1000),
+      platform: "leetcode",
+    }));
   } catch (error) {
-    console.error("❌ Error fetching LeetCode contests:", error.message);
+    console.error("Error fetching LeetCode contests:", error.message);
     return [];
   }
 };
