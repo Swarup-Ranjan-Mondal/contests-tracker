@@ -5,35 +5,65 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Fetch upcoming contests
+// Fetch upcoming contests with pagination
 router.get('/', async (req, res) => {
   try {
-    const { platform } = req.query;
-    const currentTime = new Date(); // Get current time
+    const { platform, page = 1, limit = 10 } = req.query;
+    const currentTime = new Date();
+
+    // Convert page & limit to integers
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
 
     // Build filter
     const filter = {
-      startTime: { $gte: currentTime }, // Fetch only contests that haven't started yet
+      startTime: { $gte: currentTime },
       ...(platform ? { platform: { $in: platform.split(',') } } : {}),
     };
 
-    // Fetch contests sorted by startTime in ascending order
-    const contests = await Contest.find(filter).sort({ startTime: 1 });
+    // Get total count for pagination
+    const totalContests = await Contest.countDocuments(filter);
+    const totalPages = Math.ceil(totalContests / limitNumber);
 
-    res.json(contests);
+    // Fetch contests with pagination
+    const contests = await Contest.find(filter)
+      .sort({ startTime: 1 })
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber);
+
+    res.json({ contests, totalPages, currentPage: pageNumber });
   } catch (error) {
     console.error("Error fetching contests:", error);
     res.status(500).json({ error: 'Server Error' });
   }
 });
 
-// Fetch past contests
+// Fetch past contests with pagination
 router.get('/past', async (req, res) => {
   try {
-    const { platform } = req.query;
-    const filter = platform ? { platform: { $in: platform.split(',') } } : {};
-    const contests = await Contest.find({ ...filter, startTime: { $lt: new Date() } }).sort({ startTime: -1 });
-    res.json(contests);
+    const { platform, page = 1, limit = 10 } = req.query;
+
+    // Convert page & limit to integers
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    // Build filter
+    const filter = {
+      startTime: { $lt: new Date() },
+      ...(platform ? { platform: { $in: platform.split(',') } } : {}),
+    };
+
+    // Get total count for pagination
+    const totalContests = await Contest.countDocuments(filter);
+    const totalPages = Math.ceil(totalContests / limitNumber);
+
+    // Fetch contests with pagination
+    const contests = await Contest.find(filter)
+      .sort({ startTime: -1 })
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber);
+
+    res.json({ contests, totalPages, currentPage: pageNumber });
   } catch (error) {
     res.status(500).json({ error: 'Server Error' });
   }

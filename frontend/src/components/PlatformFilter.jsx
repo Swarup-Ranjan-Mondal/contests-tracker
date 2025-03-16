@@ -9,11 +9,7 @@ const PlatformFilter = ({ selectedPlatforms, togglePlatform }) => {
           className={`px-4 py-2 rounded ${
             selectedPlatforms.includes(platform) ? "bg-blue-600 text-white" : "bg-gray-700"
           }`}
-          onClick={() =>
-            togglePlatform((prev) =>
-              prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
-            )
-          }
+          onClick={() => togglePlatform(platform)} 
         >
           {platform}
         </button>
