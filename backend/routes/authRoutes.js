@@ -32,10 +32,8 @@ router.post("/signup", async (req, res) => {
     });
 
     const userObj = user.toObject();
-    userObj.id = userObj._id;
     userObj.token = token;
 
-    delete userObj._id;
     delete userObj.password;
     delete userObj.bookmarks;
 
@@ -69,10 +67,8 @@ router.post("/login", async (req, res) => {
     });
 
     const userObj = user.toObject();
-    userObj.id = userObj._id;
     userObj.token = token;
 
-    delete userObj._id;
     delete userObj.password;
     delete userObj.bookmarks;
 

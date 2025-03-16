@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { CalendarDays, Clock } from "lucide-react";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import AuthContext from "../context/AuthContext";
 
-const ContestCard = ({ contest, isPast = false }) => {
-  const [timeInfo, setTimeInfo] = useState(getTimeInfo(contest.startTime, isPast));
+const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
+  const { user } = useContext(AuthContext);
+
+  const [timeInfo, setTimeInfo] = useState(
+    getTimeInfo(contest.startTime, isPast)
+  );
+  const [bookmarked, setBookmarked] = useState(isBookmarked);
 
   useEffect(() => {
     if (!isPast) {
@@ -16,7 +23,7 @@ const ContestCard = ({ contest, isPast = false }) => {
   function getTimeInfo(startTime, isPast) {
     const now = new Date();
     const contestDate = new Date(startTime);
-    const diffMs = now - contestDate; // Difference in milliseconds
+    const diffMs = now - contestDate;
 
     if (isPast) {
       const diffMinutes = Math.floor(diffMs / (1000 * 60));
@@ -39,14 +46,46 @@ const ContestCard = ({ contest, isPast = false }) => {
     return `Starts in ${days}d ${hours}h ${minutes}m ${seconds}s`;
   }
 
+  const handleBookmark = async () => {
+    const method = bookmarked ? "DELETE" : "POST";
+    console.log("contestId", contest);
+
+    try {
+      const response = await fetch(`/api/contests/bookmark`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+        body: JSON.stringify({ contestId: contest._id, userId: user.id }),
+      });
+
+      if (response.ok) {
+        setBookmarked(!bookmarked);
+      } else {
+        console.error("Failed to update bookmark:", await response.json());
+      }
+    } catch (error) {
+      console.error("Failed to update bookmark:", error);
+    }
+  };
+
   return (
     <div className="bg-gray-800 p-5 rounded-xl shadow-md text-white">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{contest.name}</h3>
-        <CalendarDays size={22} className="text-gray-400" />
+        <div className="flex items-center gap-3">
+          <CalendarDays size={22} className="text-gray-400" />
+          <button onClick={handleBookmark} className="text-2xl text-yellow-400">
+            {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
+          </button>
+        </div>
       </div>
+
       <p className="text-gray-400 mt-1">{contest.platform}</p>
-      <p className="text-gray-300 mt-2">{new Date(contest.startTime).toLocaleString()}</p>
+      <p className="text-gray-300 mt-2">
+        {new Date(contest.startTime).toLocaleString()}
+      </p>
 
       <div className="flex items-center mt-4 text-blue-400 font-semibold">
         <Clock size={20} className="mr-2" />

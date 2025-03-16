@@ -69,7 +69,7 @@ router.get('/past', async (req, res) => {
   }
 });
 
-// Bookmark a contest (Requires Authentication)
+// Bookmark a contest
 router.post('/bookmark', authMiddleware, async (req, res) => {
   try {
     const { contestId } = req.body;
@@ -95,7 +95,7 @@ router.post('/bookmark', authMiddleware, async (req, res) => {
   }
 });
 
-// Get Bookmarked Contests (Requires Authentication)
+// Get Bookmarked Contests
 router.get('/bookmarks', authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -111,7 +111,7 @@ router.get('/bookmarks', authMiddleware, async (req, res) => {
   }
 });
 
-// Remove a bookmarked contest (Requires Authentication)
+// Remove a bookmarked contest
 router.delete('/bookmark', authMiddleware, async (req, res) => {
   try {
     const { contestId } = req.body;

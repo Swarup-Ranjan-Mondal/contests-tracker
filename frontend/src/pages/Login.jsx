@@ -3,59 +3,70 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const Login = () => {
-    const { login } = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-        try {
-            await login(email, password, navigate);
-        } catch (err) {
-            setError(err.message ?? "Server error. Please try again.");
-        }
+    try {
+      await login(email, password, navigate);
+    } catch (err) {
+      setError(err.message ?? "Server error. Please try again.");
+    }
 
-        setLoading(false);
-    };
+    setLoading(false);
+  };
 
-    return (
-        <div className="p-6 max-w-md mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Login</h2>
-            {error && <p className="text-red-500 mb-2">{error}</p>}
-            <form onSubmit={handleLogin} className="space-y-4">
-                <input
-                    type="email"
-                    placeholder="Email"
-                    className="w-full p-2 border rounded"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    className="w-full p-2 border rounded"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit" className={`w-full p-2 rounded text-white transition-all ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 active:scale-95"}`}>
-                    Login
-                </button>
-            </form>
-            <p className="mt-4 text-center">
-                Don't have an account?{" "}
-                <Link to="/signup" className="text-blue-600 hover:underline">
-                    Sign up here
-                </Link>
-            </p>
-        </div>
-    );
+  return (
+    <div className="min-h-screen bg-gray-950 text-white p-6">
+      <div className="w-full max-w-md mx-auto mt-10 bg-gray-900 rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            type="submit"
+            className={`w-full p-3 rounded-lg text-white font-semibold transition-all ${
+              loading
+                ? "bg-gray-600 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 active:scale-95"
+            }`}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="mt-4 text-center text-gray-400">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-500 hover:underline">
+            Sign up here
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 };
 
 export default Login;

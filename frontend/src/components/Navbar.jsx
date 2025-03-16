@@ -20,9 +20,6 @@ const Navbar = () => {
         <Link to="/past" className="hover:underline">
           Past Contests
         </Link>
-        <Link to="/bookmarks" className="hover:underline">
-          Bookmarks
-        </Link>
         {user ? (
           <Link to="#" onClick={logout} className="hover:underline">
             Logout
