@@ -5,8 +5,8 @@ const Home = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
 
   const fetchContests = async () => {
-    const query = selectedPlatforms.length ? `?platform=${selectedPlatforms.join(",")}` : "";
-    const response = await fetch(`http://localhost:6000/api/contests${query}`);
+    const query = selectedPlatforms.length ? `?platform=${selectedPlatforms.join(",")}`.toLowerCase() : "";
+    const response = await fetch(`/api/contests${query}`);
     const data = await response.json();
     setContests(data);
   };
