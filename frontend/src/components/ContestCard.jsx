@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
+import { FaYoutube } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
@@ -48,7 +49,6 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
 
   const handleBookmark = async () => {
     const method = bookmarked ? "DELETE" : "POST";
-    console.log("contestId", contest);
 
     try {
       const response = await fetch(`/api/contests/bookmark`, {
@@ -91,6 +91,19 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
         <Clock size={20} className="mr-2" />
         <span>{timeInfo}</span>
       </div>
+
+      {isPast && contest.youtube_url && (
+        <div className="mt-4">
+          <a
+            href={contest.youtube_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-red-500 hover:text-red-400 font-semibold"
+          >
+            <FaYoutube size={20} /> Watch Solution
+          </a>
+        </div>
+      )}
     </div>
   );
 };

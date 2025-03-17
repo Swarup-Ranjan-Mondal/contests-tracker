@@ -91,8 +91,7 @@ export async function matchLeetCodeContestsWithVideos(contestList, videoList) {
         }
 
         return {
-            contest_name: contest.name,
-            video_title: bestMatch ? bestMatch.title : null,
+            ...contest._doc,
             youtube_url: bestMatch ? bestMatch.video_url : null
         };
     });

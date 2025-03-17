@@ -13,7 +13,7 @@ async function updateContestsWithVideos(platform, matchFunction, videosData) {
 
     const currentTime = moment().toISOString();
     const pastContests = await Contest.find({
-        platform: new RegExp(`^${platform}$`, "i"),
+        platform: platform?.toLowerCase(),
         endTime: { $lt: currentTime }
     });
 
@@ -31,7 +31,7 @@ async function updateContestsWithVideos(platform, matchFunction, videosData) {
     for (const contest of updatedContests) {
         if (contest.youtube_url) {
             await Contest.updateOne({ _id: contest._id }, { $set: { youtube_url: contest.youtube_url } });
-            console.log(`✅ Updated '${contest.contest_name}' with YouTube URL: ${contest.youtube_url}`);
+            console.log(`✅ Updated '${contest._id}' with YouTube URL: ${contest.youtube_url}`);
         }
     }
 

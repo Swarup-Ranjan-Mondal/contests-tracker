@@ -77,11 +77,7 @@ function findBestMatchingVideo(contest, videoList) {
         }
     }
 
-    if (bestMatch) {
-        console.log(`✅ Best Match for "${contest.name}" → "${bestMatch.title}"`);
-    }
-
-    return bestSimilarity > 0.4 ? bestMatch : null;  // Higher threshold for acceptance
+    return bestMatch;
 }
 
 // Match CodeChef contests with YouTube videos
