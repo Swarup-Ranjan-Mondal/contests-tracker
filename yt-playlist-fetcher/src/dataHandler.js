@@ -27,8 +27,11 @@ export async function fetchAndStorePlaylist(playlistName) {
 
 export async function fetchAndStoreAllPlaylists() {
   const playlists = Object.keys(YT_PLAYLIST_ID_MAP);
+  const allVideosData = {};
 
   for (const playlist of playlists) {
-    await fetchAndStorePlaylist(playlist);
+    allVideosData[playlist] = await fetchAndStorePlaylist(playlist);
   }
+
+  return allVideosData;
 }
