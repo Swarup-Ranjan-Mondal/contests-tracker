@@ -6,6 +6,7 @@ const ContestSchema = new mongoose.Schema({
   url: { type: String, required: true },
   startTime: { type: Date, required: true },
   endTime: { type: Date, required: true },
+  youtube_url: { type: String, default: null },
 });
 
 const Contest = mongoose.model('Contest', ContestSchema);
