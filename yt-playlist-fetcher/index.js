@@ -3,20 +3,20 @@ import connectDB from "./src/services/connectDB.js";
 import Contest from "./models/Contest.js";
 import moment from "moment";
 import { matchCodeforcesContestsWithVideos } from "./src/comparators/codeforcesComparator.js";
+import { matchCodeChefContestsWithVideos } from "./src/comparators/codechefComparator.js";
 
-// Update past contests with YouTube URLs
-async function updateContestsWithVideos(videosData) {
-    const platform = "codeforces";  
+// Function to update past contests for a specific platform
+async function updateContestsWithVideos(platform, matchFunction, videosData) {
     console.log(`\n🔍 Fetching past contests for ${platform}...`);
 
-    // Fetch past Codeforces contests (contests that ended before the current time)
+    // Fetch past contests that ended before the current time
     const currentTime = moment().toISOString();
     const pastContests = await Contest.find({
         platform: new RegExp(`^${platform}$`, "i"),
         endTime: { $lt: currentTime }
     });
 
-    console.log(`📢 Found ${pastContests.length} past contests.`);
+    console.log(`📢 Found ${pastContests.length} past contests for ${platform}.`);
 
     if (pastContests.length === 0) {
         console.log(`⚠️ No past contests found for ${platform}.`);
@@ -31,7 +31,7 @@ async function updateContestsWithVideos(videosData) {
         return;
     }
 
-    const updatedContests = await matchCodeforcesContestsWithVideos(pastContests, videoList);
+    const updatedContests = await matchFunction(pastContests, videoList);
     console.log(`✅ Updated ${updatedContests.length} contests for ${platform}.`);
 }
 
@@ -43,10 +43,12 @@ async function main() {
 
         const videosData = await fetchAndStoreAllPlaylists();
 
-        console.log("🔄 Matching YouTube videos with past Codeforces contests...");
-        await updateContestsWithVideos(videosData);
+        console.log("🔄 Matching YouTube videos with past contests...");
 
-        console.log("✅ Past Codeforces contests updated with matching YouTube video URLs.");
+        await updateContestsWithVideos("codeforces", matchCodeforcesContestsWithVideos, videosData);
+        await updateContestsWithVideos("codechef", matchCodeChefContestsWithVideos, videosData);
+
+        console.log("✅ All past contests updated with matching YouTube video URLs.");
     } catch (error) {
         console.error("❌ Error in main execution:", error);
         process.exit(1);
