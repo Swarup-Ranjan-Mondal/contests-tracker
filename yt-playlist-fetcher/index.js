@@ -4,6 +4,7 @@ import Contest from "./models/Contest.js";
 import moment from "moment";
 import { matchCodeforcesContestsWithVideos } from "./src/comparators/codeforcesComparator.js";
 import { matchCodeChefContestsWithVideos } from "./src/comparators/codechefComparator.js";
+import { matchLeetCodeContestsWithVideos } from "./src/comparators/leetcodeComparator.js";
 
 // Function to update past contests for a specific platform
 async function updateContestsWithVideos(platform, matchFunction, videosData) {
@@ -47,6 +48,7 @@ async function main() {
 
         await updateContestsWithVideos("codeforces", matchCodeforcesContestsWithVideos, videosData);
         await updateContestsWithVideos("codechef", matchCodeChefContestsWithVideos, videosData);
+        await updateContestsWithVideos("leetcode", matchLeetCodeContestsWithVideos, videosData);
 
         console.log("✅ All past contests updated with matching YouTube video URLs.");
     } catch (error) {
