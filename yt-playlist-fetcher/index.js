@@ -33,7 +33,19 @@ async function updateContestsWithVideos(platform, matchFunction, videosData) {
     }
 
     const updatedContests = await matchFunction(pastContests, videoList);
-    console.log(`✅ Updated ${updatedContests.length} contests for ${platform}.`);
+
+    // Update 'youtube_url' field in MongoDB for matched contests
+    for (const contest of updatedContests) {
+        if (contest.youtube_url) {
+            await Contest.updateOne(
+                { _id: contest._id }, // Match contest by ID
+                { $set: { youtube_url: contest.youtube_url } } // Update YouTube URL
+            );
+            console.log(`✅ Updated '${contest.contest_name}' with YouTube URL: ${contest.youtube_url}`);
+        }
+    }
+
+    console.log(`✅ Successfully updated ${updatedContests.filter(c => c.youtube_url).length} contests for ${platform}.`);
 }
 
 // Main function
