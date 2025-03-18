@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
     req.user = verified;
     next();
   } catch (error) {
-    res.status(400).json({ error: 'Invalid Token' });
+    res.status(401).json({ error: 'Invalid Token' });
   }
 };
 

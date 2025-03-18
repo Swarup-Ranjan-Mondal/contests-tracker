@@ -5,7 +5,7 @@ import Pagination from "../components/Pagination";
 import AuthContext from "../context/AuthContext";
 
 const PastContests = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [contests, setContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
@@ -45,7 +45,7 @@ const PastContests = () => {
             headers: { Authorization: `Bearer ${user.token}` },
           }
         );
-        if (!response.ok) throw new Error("Failed to fetch contests");
+        if (response.status === 401) return logout();
 
         const data = await response.json();
         setContests(data.contests);
@@ -68,7 +68,7 @@ const PastContests = () => {
         const response = await fetch(`/api/contests/bookmarks`, {
           headers: { Authorization: `Bearer ${user.token}` },
         });
-        if (!response.ok) throw new Error("Failed to fetch bookmarks");
+        if (response.status === 401) return logout();
 
         const bookmarks = await response.json();
         setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));

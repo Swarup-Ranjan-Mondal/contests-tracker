@@ -5,7 +5,7 @@ import Pagination from "../components/Pagination";
 import AuthContext from "../context/AuthContext";
 
 const Home = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [contests, setContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
@@ -41,6 +41,8 @@ const Home = () => {
             headers: { Authorization: `Bearer ${user.token}` },
           }
         );
+        if (response.status === 401) return logout();
+
         const data = await response.json();
         setContests(data.contests);
         setTotalPages(data.totalPages);
@@ -61,6 +63,8 @@ const Home = () => {
           method: "GET",
           headers: { Authorization: `Bearer ${user.token}` },
         });
+        if (response.status === 401) return logout();
+
         const bookmarks = await response.json();
         setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
       } catch (error) {
@@ -85,12 +89,12 @@ const Home = () => {
       ) : (
         <>
           <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {contests.length > 0 ? (
+            {contests?.length > 0 ? (
               contests.map((contest) => (
                 <ContestCard
                   key={contest._id}
                   contest={contest}
-                  isBookmarked={bookmarkedContests.has(contest._id)}
+                  isBookmarked={bookmarkedContests?.has(contest._id)}
                 />
               ))
             ) : (

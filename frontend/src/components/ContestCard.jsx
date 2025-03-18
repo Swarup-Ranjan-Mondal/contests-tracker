@@ -5,7 +5,7 @@ import { FaYoutube } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
 
   const [timeInfo, setTimeInfo] = useState(
     getTimeInfo(contest.startTime, isPast)
@@ -62,6 +62,8 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
 
       if (response.ok) {
         setBookmarked(!bookmarked);
+      } else if (response.status === 401) {
+        return logout();
       } else {
         console.error("Failed to update bookmark:", await response.json());
       }
