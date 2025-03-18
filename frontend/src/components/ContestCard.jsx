@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { CalendarDays, Clock } from "lucide-react";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
+import { FaExternalLinkAlt, FaYoutube } from "react-icons/fa";
 import AuthContext from "../context/AuthContext";
 
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
@@ -92,6 +92,17 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
       <div className="flex items-center mt-4 text-blue-400 font-semibold">
         <Clock size={20} className="mr-2" />
         <span>{timeInfo}</span>
+      </div>
+
+      <div className="mt-4">
+        <a
+          href={contest.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold"
+        >
+          <FaExternalLinkAlt size={16} /> Go to Contest
+        </a>
       </div>
 
       {isPast && contest.youtube_url && (
