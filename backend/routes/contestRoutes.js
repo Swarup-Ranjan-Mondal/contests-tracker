@@ -69,6 +69,50 @@ router.get('/past', authMiddleware, async (req, res) => {
   }
 });
 
+// Fetch contest details by contestId
+router.get('/:contestId', authMiddleware, async (req, res) => {
+  try {
+    const { contestId } = req.params;
+    const contest = await Contest.findById(contestId);
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    res.json(contest);
+  } catch (error) {
+    console.error("Error fetching contest details:", error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
+// Update contest YouTube URL by contestId
+router.put('/:contestId/youtube-url', authMiddleware, async (req, res) => {
+  try {
+    const { contestId } = req.params;
+    const { youtube_url } = req.body;
+
+    if (!youtube_url || !youtube_url.startsWith("https://www.youtube.com")) {
+      return res.status(400).json({ error: 'Invalid YouTube URL' });
+    }
+
+    const contest = await Contest.findByIdAndUpdate(
+      contestId,
+      { youtube_url },
+      { new: true }
+    );
+
+    if (!contest) {
+      return res.status(404).json({ error: 'Contest not found' });
+    }
+
+    res.json({ message: 'YouTube link updated successfully', contest });
+  } catch (error) {
+    console.error("Error updating YouTube link:", error);
+    res.status(500).json({ error: 'Server Error' });
+  }
+});
+
 // Bookmark a contest
 router.post('/bookmark', authMiddleware, async (req, res) => {
   try {
