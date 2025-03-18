@@ -15,9 +15,9 @@ async function executeTask() {
 }
 
 // Run the function every minute using cron
-// cron.schedule("*/1 * * * *", async () => {
-//   console.log("⏳ Running scheduled task to update contests...");
+cron.schedule("*/1 * * * *", async () => {
+  console.log("⏳ Running scheduled task to update contests...");
   await executeTask();
-// });
+});
 
 console.log("🕒 Cron job scheduled to run every minute.");
