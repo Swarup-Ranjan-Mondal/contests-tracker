@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { DATA_STORE_PATH } from "../config.js";
+import { DATA_STORE_PATH } from "../../config/config.js";
 
 // Ensure data directory exists
 if (!fs.existsSync(DATA_STORE_PATH)) {

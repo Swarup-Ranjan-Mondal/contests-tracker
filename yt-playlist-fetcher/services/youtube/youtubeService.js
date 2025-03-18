@@ -1,5 +1,5 @@
 import axios from "axios";
-import { YT_API_KEY, YT_API_URL } from "../config.js";
+import { YT_API_KEY, YT_API_URL } from "../../config/config.js";
 
 async function getPlaylistVideos(playlistId) {
   let videos = [];

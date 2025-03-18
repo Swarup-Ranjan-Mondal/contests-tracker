@@ -1,11 +1,11 @@
 import cron from "node-cron";
-import { fetchAndStoreAllPlaylists } from "./src/dataHandler.js";
-import connectDB from "./src/services/connectDB.js";
+import { fetchAndStoreAllPlaylists } from "./handlers/dataHandler.js";
+import connectDB from "./services/db/connectDB.js";
 import Contest from "./models/Contest.js";
 import moment from "moment";
-import { matchCodeforcesContestsWithVideos } from "./src/comparators/codeforcesComparator.js";
-import { matchCodeChefContestsWithVideos } from "./src/comparators/codechefComparator.js";
-import { matchLeetCodeContestsWithVideos } from "./src/comparators/leetcodeComparator.js";
+import { matchCodeforcesContestsWithVideos } from "./comparators/codeforcesComparator.js";
+import { matchCodeChefContestsWithVideos } from "./comparators/codechefComparator.js";
+import { matchLeetCodeContestsWithVideos } from "./comparators/leetcodeComparator.js";
 
 // Function to update past contests for a specific platform
 async function updateContestsWithVideos(platform, matchFunction, videosData) {
