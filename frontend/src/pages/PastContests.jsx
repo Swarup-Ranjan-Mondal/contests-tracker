@@ -62,8 +62,6 @@ const PastContests = () => {
   // Fetch bookmarked contests once on mount
   useEffect(() => {
     const fetchBookmarkedContests = async () => {
-      if (!user?.token) return;
-
       try {
         const response = await fetch(`/api/contests/bookmarks`, {
           method: "GET",
@@ -72,6 +70,7 @@ const PastContests = () => {
         if (response.status === 401) return logout();
 
         const bookmarks = await response.json();
+        setBookmarkedContests(new Set());
         setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
       } catch (error) {
         console.error("Error fetching bookmarked contests:", error);
@@ -79,7 +78,7 @@ const PastContests = () => {
     };
 
     fetchBookmarkedContests();
-  }, [user]);
+  }, []);
 
   return (
     <div className="p-6 min-h-screen bg-gray-950 text-white">

@@ -165,7 +165,9 @@ router.put('/:contestId/youtube-link', authMiddleware, async (req, res) => {
     const { contestId } = req.params;
     const { youtube_url } = req.body;
 
-    if (!youtube_url || !youtube_url.startsWith("https://www.youtube.com")) {
+    let youtubeUrlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=)[\w-]+(&[\w-]+=[\w-]+)*$/;
+    
+    if (!youtube_url || !youtubeUrlRegex.test(youtube_url)) {
       return res.status(400).json({ error: 'Invalid YouTube URL' });
     }
 

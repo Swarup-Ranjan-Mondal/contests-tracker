@@ -88,13 +88,15 @@ const LinkSolution = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage("YouTube link added successfully!");
+        setTimeout(() => navigate('/past'), 750);
       } else {
-        setMessage(data.message || "Failed to add link.");
+        setMessage(data.error || "Failed to add link.");
       }
     } catch (error) {
       setMessage("Error submitting data.");
       console.error(error);
     }
+    setTimeout(() => setMessage(""), 1500);
   };
 
   if (!contest) {
@@ -102,8 +104,8 @@ const LinkSolution = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex justify-center items-center p-6">
-      <div className="w-full max-w-xl p-8 rounded-lg shadow-lg bg-gray-800">
+    <div className="min-h-screen bg-gray-950 text-white p-6">
+      <div className="w-full max-w-xl mx-auto mt-10 bg-gray-800 rounded-lg shadow-lg p-6">
         <h2 className="text-3xl font-bold mb-6 text-blue-500">
           Attach YouTube Video Solution
         </h2>

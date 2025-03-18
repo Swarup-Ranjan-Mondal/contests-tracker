@@ -71,9 +71,9 @@ const Home = () => {
         console.error("Error fetching bookmarked contests:", error);
       }
     };
-
+    
     fetchBookmarkedContests();
-  }, [user]);
+  }, []);
 
   return (
     <div className="p-6 min-h-screen bg-gray-950 text-white">
