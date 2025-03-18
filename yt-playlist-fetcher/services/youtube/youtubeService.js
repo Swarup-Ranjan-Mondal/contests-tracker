@@ -24,7 +24,7 @@ async function getPlaylistVideos(playlistId) {
           video_id: item.snippet.resourceId.videoId,
           video_url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
           description: item.snippet.description.replace(/\n/g, " "),
-          thumbnail: item.snippet.thumbnails.high.url,
+          // thumbnail: item.snippet.thumbnails.high.url,
           published_at: item.snippet.publishedAt,
         }))
       );
@@ -39,4 +39,4 @@ async function getPlaylistVideos(playlistId) {
   return videos;
 }
 
-export default getPlaylistVideos;  // ✅ Use ES Module export
+export default getPlaylistVideos;
