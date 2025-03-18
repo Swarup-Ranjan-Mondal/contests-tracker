@@ -1,9 +1,9 @@
-import fetchCodeforcesContests from "../scrapers/codeforcesScraper.js";
-import fetchCodeChefContests from "./scrapers/codechefScraper.js";
-import fetchLeetcodeContests from "./scrapers/leetcodeScraper.js";
-import Contest from "../models/Contest.js";
+import fetchCodeforcesContests from "../../scrapers/codeforcesScraper.js";
+import fetchCodeChefContests from "../../scrapers/codechefScraper.js";
+import fetchLeetcodeContests from "../../scrapers/leetcodeScraper.js";
+import Contest from "../../models/Contest.js";
 
-const contestsFetcher = async () => {
+const contestsService = async () => {
   try {
     console.log("🔍 Fetching contests...");
 
@@ -102,4 +102,4 @@ const contestsFetcher = async () => {
   }
 };
 
-export default contestsFetcher;
+export default contestsService;
