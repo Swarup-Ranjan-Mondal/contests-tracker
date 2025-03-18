@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
 import { CalendarDays, Clock } from "lucide-react";
-import { FaRegBookmark, FaBookmark } from "react-icons/fa";
-import { FaExternalLinkAlt, FaYoutube } from "react-icons/fa";
+import { FaRegBookmark, FaBookmark, FaExternalLinkAlt, FaYoutube, FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [timeInfo, setTimeInfo] = useState(
     getTimeInfo(contest.startTime, isPast)
@@ -72,6 +73,11 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
     }
   };
 
+  const handleEditButton = ()  => {
+    localStorage.setItem("editContest", JSON.stringify(contest));
+    navigate(`/link-solution/${contest._id}`);
+  }
+
   return (
     <div className="bg-gray-800 p-5 rounded-xl shadow-md text-white">
       <div className="flex justify-between items-center">
@@ -94,7 +100,8 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
         <span>{timeInfo}</span>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-4 flex flex-wrap gap-4">
+        {/* Contest Link */}
         <a
           href={contest.url}
           target="_blank"
@@ -103,20 +110,36 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
         >
           <FaExternalLinkAlt size={16} /> Go to Contest
         </a>
-      </div>
 
-      {isPast && contest.youtube_url && (
-        <div className="mt-4">
-          <a
-            href={contest.youtube_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-red-500 hover:text-red-400 font-semibold"
+        {/* Solution Link or Placeholder */}
+        {isPast ? (
+          contest.youtube_url ? (
+            <a
+              href={contest.youtube_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-red-500 hover:text-red-400 font-semibold"
+            >
+              <FaYoutube size={20} /> Watch Solution
+            </a>
+          ) : (
+            <span className="text-gray-500 flex items-center gap-2">
+              <FaYoutube size={20} /> No Solution Available
+            </span>
+          )
+        ) : null}
+
+        {/* Edit Button */}
+        {isPast && (
+          <button
+            onClick={handleEditButton}
+            className="text-yellow-400 hover:text-yellow-300 flex items-center gap-2"
           >
-            <FaYoutube size={20} /> Watch Solution
-          </a>
-        </div>
-      )}
+            <FaEdit size={18} />
+            Edit
+          </button>
+        )}
+      </div>
     </div>
   );
 };
