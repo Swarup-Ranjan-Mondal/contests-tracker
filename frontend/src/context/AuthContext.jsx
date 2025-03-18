@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
       }
     };
 
-    window.addEventListener("storage", checkUser); // Sync across tabs
+    window.addEventListener("storage", checkUser);
     return () => window.removeEventListener("storage", checkUser);
   }, [user]);
 

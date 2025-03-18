@@ -66,6 +66,7 @@ const PastContests = () => {
 
       try {
         const response = await fetch(`/api/contests/bookmarks`, {
+          method: "GET",
           headers: { Authorization: `Bearer ${user.token}` },
         });
         if (response.status === 401) return logout();

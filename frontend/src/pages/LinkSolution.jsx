@@ -1,21 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { FaYoutube, FaExternalLinkAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate, useParams } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
 const LinkSolution = () => {
+  const { user, logout } = useContext(AuthContext);
+
   const [contest, setContest] = useState(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [message, setMessage] = useState("");
+
   const navigate = useNavigate();
+  const { contestId } = useParams();
 
   useEffect(() => {
-    const storedContest = localStorage.getItem("editContest");
-    if (storedContest) {
-      const parsedContest = JSON.parse(storedContest);
-      setContest(parsedContest);
-      setYoutubeUrl(parsedContest.youtube_url || "");
-    }
-  }, []);
+    const fetchContestDetails = async () => {
+      try {
+        const response = await fetch(`/api/contests/${contestId}`, {
+          method: "GET",
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        if (response.status === 401) return logout();
+
+        const data = await response.json();
+
+        setContest(data);
+        setYoutubeUrl(data.youtube_url || "");
+      } catch (error) {
+        console.error("Error fetching contest details:", error);
+      }
+    };
+
+    if(!user) return logout();
+    fetchContestDetails();
+  }, [contestId, user]);
 
   const getFormattedTime = (dateString) => {
     const date = new Date(dateString);
@@ -58,16 +76,14 @@ const LinkSolution = () => {
     }
 
     try {
-      const response = await fetch(
-        `/api/contests/${contest._id}/youtube-link`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ youtube_url: youtubeUrl }),
-        }
-      );
+      const response = await fetch(`/api/contests/${contest._id}/youtube-link`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ youtube_url: youtubeUrl }),
+      });
 
       const data = await response.json();
       if (response.ok) {

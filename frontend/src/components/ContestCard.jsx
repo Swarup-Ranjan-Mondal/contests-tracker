@@ -73,11 +73,6 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
     }
   };
 
-  const handleEditButton = ()  => {
-    localStorage.setItem("editContest", JSON.stringify(contest));
-    navigate(`/link-solution/${contest._id}`);
-  }
-
   return (
     <div className="bg-gray-800 p-5 rounded-xl shadow-md text-white">
       <div className="flex justify-between items-center">
@@ -132,7 +127,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
         {/* Edit Button */}
         {isPast && (
           <button
-            onClick={handleEditButton}
+            onClick={() => navigate(`/link-solution/${contest._id}`)}
             className="text-yellow-400 hover:text-yellow-300 flex items-center gap-2"
           >
             <FaEdit size={18} />
