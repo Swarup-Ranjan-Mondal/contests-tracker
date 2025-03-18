@@ -35,7 +35,11 @@ const Home = () => {
 
       try {
         const response = await fetch(
-          `/api/contests?${queryParams.toString().toLowerCase()}`
+          `/api/contests?${queryParams.toString().toLowerCase()}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
         );
         const data = await response.json();
         setContests(data.contests);

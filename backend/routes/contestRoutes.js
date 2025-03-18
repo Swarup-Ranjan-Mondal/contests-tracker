@@ -6,7 +6,7 @@ import authMiddleware from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // Fetch upcoming contests with pagination
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
   try {
     const { platform, page = 1, limit = 10 } = req.query;
     const currentTime = new Date();
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 });
 
 // Fetch past contests with pagination
-router.get('/past', async (req, res) => {
+router.get('/past', authMiddleware, async (req, res) => {
   try {
     const { platform, page = 1, limit = 10 } = req.query;
 

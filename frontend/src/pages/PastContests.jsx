@@ -39,7 +39,11 @@ const PastContests = () => {
         queryParams.append("limit", 12);
 
         const response = await fetch(
-          `/api/contests/past?${queryParams.toString()}`
+          `/api/contests/past?${queryParams.toString()}`,
+          {
+            method: "GET",
+            headers: { Authorization: `Bearer ${user.token}` },
+          }
         );
         if (!response.ok) throw new Error("Failed to fetch contests");
 

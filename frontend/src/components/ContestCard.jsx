@@ -31,8 +31,8 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
       const diffHours = Math.floor(diffMinutes / 60);
       const diffDays = Math.floor(diffHours / 24);
 
-      if (diffMinutes < 60) return "A few minutes ago";
-      if (diffHours < 24) return `${diffHours} hours ago`;
+      if (diffMinutes < 60) return "Ended a few minutes ago";
+      if (diffHours < 24) return `Ended ${diffHours} hours ago`;
       return `Happened ${diffDays} days ago`;
     }
 
