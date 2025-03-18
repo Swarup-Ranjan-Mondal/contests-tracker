@@ -3,9 +3,11 @@ import ContestCard from "../components/ContestCard";
 import PlatformFilter from "../components/PlatformFilter";
 import Pagination from "../components/Pagination";
 import AuthContext from "../context/AuthContext";
+import ThemeContext from "../context/ThemeContext";
 
 const Home = () => {
   const { user, logout } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
 
   const [contests, setContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
@@ -76,7 +78,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gray-950 text-white">
+    <div className={`p-6 min-h-screen ${theme === "dark" ? "bg-gray-950 text-white" : "bg-gray-100 text-gray-900"}`}>
       <h2 className="text-2xl font-bold mb-4">Upcoming Contests</h2>
 
       <PlatformFilter
@@ -98,8 +100,8 @@ const Home = () => {
                 />
               ))
             ) : (
-              <p className="text-center text-gray-400">
-                No past contests found.
+              <p className={`text-center ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                No contests found.
               </p>
             )}
           </div>

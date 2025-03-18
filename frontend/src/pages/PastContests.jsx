@@ -1,11 +1,13 @@
 import { useEffect, useState, useContext } from "react";
-import PlatformFilter from "../components/PlatformFilter";
 import ContestCard from "../components/ContestCard";
+import PlatformFilter from "../components/PlatformFilter";
 import Pagination from "../components/Pagination";
 import AuthContext from "../context/AuthContext";
+import ThemeContext from "../context/ThemeContext";
 
 const PastContests = () => {
   const { user, logout } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
 
   const [contests, setContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
@@ -70,7 +72,6 @@ const PastContests = () => {
         if (response.status === 401) return logout();
 
         const bookmarks = await response.json();
-        setBookmarkedContests(new Set());
         setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
       } catch (error) {
         console.error("Error fetching bookmarked contests:", error);
@@ -81,7 +82,13 @@ const PastContests = () => {
   }, []);
 
   return (
-    <div className="p-6 min-h-screen bg-gray-950 text-white">
+    <div
+      className={`p-6 min-h-screen ${
+        theme === "dark"
+          ? "bg-gray-950 text-white"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
       <h2 className="text-2xl font-bold mb-4">Past Contests</h2>
 
       <PlatformFilter
@@ -104,7 +111,11 @@ const PastContests = () => {
                 />
               ))
             ) : (
-              <p className="text-center text-gray-400">
+              <p
+                className={`text-center ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
                 No past contests found.
               </p>
             )}

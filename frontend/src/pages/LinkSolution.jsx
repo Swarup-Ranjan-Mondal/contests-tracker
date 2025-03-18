@@ -1,10 +1,12 @@
 import { useState, useEffect, useContext } from "react";
 import { FaYoutube, FaExternalLinkAlt } from "react-icons/fa";
-import { data, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import ThemeContext from "../context/ThemeContext";
 
 const LinkSolution = () => {
   const { user, logout } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
 
   const [contest, setContest] = useState(null);
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -15,6 +17,8 @@ const LinkSolution = () => {
 
   useEffect(() => {
     const fetchContestDetails = async () => {
+      if (!user) return logout();
+
       try {
         const response = await fetch(`/api/contests/${contestId}`, {
           method: "GET",
@@ -23,15 +27,14 @@ const LinkSolution = () => {
         if (response.status === 401) return logout();
 
         const data = await response.json();
-
         setContest(data);
         setYoutubeUrl(data.youtube_url || "");
       } catch (error) {
         console.error("Error fetching contest details:", error);
+        setMessage("Failed to fetch contest details.");
       }
     };
 
-    if(!user) return logout();
     fetchContestDetails();
   }, [contestId, user]);
 
@@ -62,10 +65,9 @@ const LinkSolution = () => {
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
 
-    if (minutes === 0) {
-      return `${hours} hr${hours > 1 ? "s" : ""}`;
-    }
-    return `${hours} hr${hours > 1 ? "s" : ""} ${minutes} min`;
+    return minutes === 0
+      ? `${hours} hr${hours > 1 ? "s" : ""}`
+      : `${hours} hr${hours > 1 ? "s" : ""} ${minutes} min`;
   };
 
   const handleSubmit = async (e) => {
@@ -88,34 +90,43 @@ const LinkSolution = () => {
       const data = await response.json();
       if (response.ok) {
         setMessage("YouTube link added successfully!");
-        setTimeout(() => navigate('/past'), 750);
+        setTimeout(() => navigate("/past"), 750);
       } else {
         setMessage(data.error || "Failed to add link.");
       }
     } catch (error) {
+      console.error("Error submitting data:", error);
       setMessage("Error submitting data.");
-      console.error(error);
     }
+
     setTimeout(() => setMessage(""), 1500);
   };
 
   if (!contest) {
-    return <p className="text-white">Loading contest details...</p>;
+    return <p className="text-gray-500">Loading contest details...</p>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="w-full max-w-xl mx-auto mt-10 bg-gray-800 rounded-lg shadow-lg p-6">
+    <div
+      className={`min-h-screen p-6 ${
+        theme === "dark"
+          ? "bg-gray-950 text-white"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <div
+        className={`w-full max-w-xl mx-auto mt-10 p-6 rounded-lg shadow-lg ${
+          theme === "dark" ? "bg-gray-800" : "bg-white"
+        }`}
+      >
         <h2 className="text-3xl font-bold mb-6 text-blue-500">
           Attach YouTube Video Solution
         </h2>
 
         {message && (
           <p
-            className={`mb-4 text-center transition-all duration-300 ${
-              message.includes("successfully")
-                ? "text-green-500"
-                : "text-red-500"
+            className={`mb-4 text-center ${
+              message.includes("successfully") ? "text-green-500" : "text-red-500"
             }`}
           >
             {message}
@@ -125,28 +136,24 @@ const LinkSolution = () => {
         <div className="space-y-6">
           <div>
             <p className="text-gray-400 font-semibold">Contest Name:</p>
-            <p className="text-white break-words">{contest.name}</p>
+            <p>{contest.name}</p>
           </div>
 
           <div className="flex justify-between gap-8">
             <div className="w-1/2">
               <p className="text-gray-400 font-semibold">Platform:</p>
-              <p className="text-white">{contest.platform}</p>
+              <p>{contest.platform}</p>
             </div>
             <div className="w-1/2">
               <p className="text-gray-400 font-semibold">Start Time:</p>
-              <p className="text-white">
-                {getFormattedTime(contest.startTime)}
-              </p>
+              <p>{getFormattedTime(contest.startTime)}</p>
             </div>
           </div>
 
           <div className="flex justify-between gap-8">
             <div className="w-1/2">
               <p className="text-gray-400 font-semibold">Duration:</p>
-              <p className="text-white">
-                {getDuration(contest.startTime, contest.endTime)}
-              </p>
+              <p>{getDuration(contest.startTime, contest.endTime)}</p>
             </div>
             <div className="w-1/2">
               <p className="text-gray-400 font-semibold">Contest URL:</p>
@@ -154,24 +161,27 @@ const LinkSolution = () => {
                 href={contest.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400 flex items-center gap-2"
+                className="text-blue-500 flex items-center gap-2"
               >
                 <FaExternalLinkAlt /> Visit Contest
               </a>
             </div>
           </div>
 
+          {/* Form Section */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="text-gray-400 font-semibold">
-                YouTube Solution URL
-              </label>
+              <label className="text-gray-400 font-semibold">YouTube Solution URL</label>
               <div className="flex items-center gap-2 mt-1">
                 <FaYoutube className="text-red-500" size={36} />
                 <input
                   type="url"
-                  placeholder="https://www.youtube.com/watch?v=rjUwmXD9N3k"
-                  className="w-full p-2 h-10 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="https://www.youtube.com/watch?v=example"
+                  className={`w-full p-2 h-10 border rounded-lg focus:outline-none ${
+                    theme === "dark"
+                      ? "bg-gray-700 border-gray-600 focus:ring-blue-500"
+                      : "bg-gray-100 border-gray-300 focus:ring-blue-600"
+                  }`}
                   value={youtubeUrl}
                   onChange={(e) => setYoutubeUrl(e.target.value)}
                 />
@@ -183,13 +193,13 @@ const LinkSolution = () => {
               <button
                 onClick={() => navigate("/past")}
                 type="button"
-                className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold text-white"
+                className="w-full p-3 bg-gray-600 hover:bg-gray-500 rounded-lg font-semibold text-white"
               >
                 ← Back to Past Contests
               </button>
               <button
                 type="submit"
-                className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold"
+                className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white"
               >
                 Submit
               </button>

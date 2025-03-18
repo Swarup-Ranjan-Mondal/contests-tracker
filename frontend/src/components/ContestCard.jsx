@@ -1,11 +1,19 @@
 import { useEffect, useState, useContext } from "react";
 import { CalendarDays, Clock } from "lucide-react";
-import { FaRegBookmark, FaBookmark, FaExternalLinkAlt, FaYoutube, FaEdit } from "react-icons/fa";
+import {
+  FaRegBookmark,
+  FaBookmark,
+  FaExternalLinkAlt,
+  FaYoutube,
+  FaEdit,
+} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import ThemeContext from "../context/ThemeContext";
 
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
   const { user, logout } = useContext(AuthContext);
+  const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   const [timeInfo, setTimeInfo] = useState(
@@ -74,7 +82,13 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
   };
 
   return (
-    <div className="bg-gray-800 p-5 rounded-xl shadow-md text-white">
+    <div
+      className={`p-5 rounded-xl ${
+        theme === "dark"
+          ? "bg-gray-800 text-white shadow-lg"
+          : "bg-white text-gray-900 shadow-md border border-gray-200"
+      }`}
+    >
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{contest.name}</h3>
         <div className="flex items-center gap-3">
@@ -86,7 +100,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
       </div>
 
       <p className="text-gray-400 mt-1">{contest.platform}</p>
-      <p className="text-gray-300 mt-2">
+      <p className="text-gray-500 mt-2">
         {new Date(contest.startTime).toLocaleString()}
       </p>
 
