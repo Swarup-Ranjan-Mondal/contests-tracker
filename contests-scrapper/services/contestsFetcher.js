@@ -1,9 +1,9 @@
-import fetchCodeforcesContests from './codeforcesScraper.js';
-import fetchCodeChefContests from './codechefScraper.js';
-import fetchLeetcodeContests from './leetcodeScraper.js';
-import Contest from '../models/Contest.js';
+import fetchCodeforcesContests from "../scrapers/codeforcesScraper.js";
+import fetchCodeChefContests from "./scrapers/codechefScraper.js";
+import fetchLeetcodeContests from "./scrapers/leetcodeScraper.js";
+import Contest from "../models/Contest.js";
 
-const fetchAllContests = async () => {
+const contestsFetcher = async () => {
   try {
     console.log("🔍 Fetching contests...");
 
@@ -28,7 +28,11 @@ const fetchAllContests = async () => {
     console.log("✅ LeetCode Contests:", leetcode.length, "contests");
 
     // If all arrays are empty, return early
-    if (codeforces.length === 0 && codechef.length === 0 && leetcode.length === 0) {
+    if (
+      codeforces.length === 0 &&
+      codechef.length === 0 &&
+      leetcode.length === 0
+    ) {
       console.warn("⚠️ No contests fetched from any platform.");
       return;
     }
@@ -39,9 +43,18 @@ const fetchAllContests = async () => {
     // Debugging: Log invalid date formats before filtering
     allContests.forEach((contest, index) => {
       if (!contest.start_time || !contest.end_time) {
-        console.warn(`⚠️ Missing date fields in contest at index ${index}:`, contest);
-      } else if (isNaN(new Date(contest.start_time)) || isNaN(new Date(contest.end_time))) {
-        console.warn(`⚠️ Invalid date format in contest at index ${index}:`, contest);
+        console.warn(
+          `⚠️ Missing date fields in contest at index ${index}:`,
+          contest
+        );
+      } else if (
+        isNaN(new Date(contest.start_time)) ||
+        isNaN(new Date(contest.end_time))
+      ) {
+        console.warn(
+          `⚠️ Invalid date format in contest at index ${index}:`,
+          contest
+        );
       }
     });
 
@@ -54,7 +67,10 @@ const fetchAllContests = async () => {
           isNaN(new Date(contest.start_time).getTime()) ||
           isNaN(new Date(contest.end_time).getTime())
         ) {
-          console.error(`❌ Skipping invalid contest at index ${index}:`, contest);
+          console.error(
+            `❌ Skipping invalid contest at index ${index}:`,
+            contest
+          );
           return false;
         }
         return true;
@@ -86,4 +102,4 @@ const fetchAllContests = async () => {
   }
 };
 
-export default fetchAllContests;
+export default contestsFetcher;
