@@ -1,137 +1,283 @@
-# Contest Tracker
+# 🕵️‍♂️ Contest Tracker  
 
-## Overview
+A web application that helps competitive programmers track upcoming and past contests from multiple platforms like **Codeforces, LeetCode, and CodeChef**. Users can bookmark contests and link YouTube video solutions to past contests for easy reference.  
 
-The Contest Tracker is a web application designed to track programming contests from various platforms such as Codeforces, LeetCode, and CodeChef. It provides users with the ability to view upcoming and past contests, bookmark contests, and link YouTube video solutions to past contests.
+<p align="center">
+  <span>
+    <img src="https://assets.codeforces.com/users/kguseva/comments/cf.png" alt="Codeforces Logo" width="150" />
+    &nbsp;&nbsp;&nbsp;&nbsp; <!-- Space between logos -->
+    <img src="https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png" alt="CodeChef Logo" width="150" />
+    &nbsp;&nbsp;&nbsp;&nbsp; <!-- Space between logos -->
+    <img src="https://cdn-images-1.medium.com/max/1600/1*gBkMCGTAdSk4tu17SCa7RQ.png" alt="LeetCode Logo" width="150" />
+  </span>
+</p>
 
-## Project Structure
+## 🚀 Features  
 
-The project is divided into four main directories:
+✅ **Track Upcoming Contests** – Stay updated with upcoming programming contests across platforms.  
+✅ **View Past Contests** – Browse past contests along with problem solutions.  
+✅ **Bookmark Contests** – Save contests for future reference.  
+✅ **YouTube Video Integration** – Link video explanations to past contests.  
+✅ **User Authentication** – Secure login and signup with JWT authentication.  
+✅ **Dark/Light Theme Support** – Toggle between themes for a personalized experience.  
 
-1. **backend**: Contains the server-side code, including API routes, controllers, models, and middleware.
-2. **contests-scrapper**: Contains the scrapers for fetching contest data from different platforms and updating the database.
-3. **frontend**: Contains the client-side code, built with React and Vite.
-4. **yt-playlist-fetcher**: Contains the code for fetching YouTube playlist videos and matching them with past contests.
+## 🏗️ **Project Structure**  
 
-## Backend
+The project is organized into **four main directories**, each serving a distinct purpose:  
 
-### API Endpoints
+```bash
+📦 Contest Tracker
+├── 📂 backend              # Backend API and database logic
+├── 📂 contests-scrapper    # Scrapers for fetching contest data
+├── 📂 frontend             # React-based user interface
+└── 📂 yt-playlist-fetcher  # YouTube video fetching and linking
+```
 
-#### Authentication
+## 📌 **Backend** (`backend/`)  
 
-- **POST /api/auth/signup**: Register a new user.
-- **POST /api/auth/login**: Login an existing user.
+The backend is responsible for handling API requests, managing user authentication, storing contest data, and supporting YouTube video link management. Built with **Node.js**, **Express.js**, and **MongoDB**.  
 
-#### Contests
+### 🚀 **API Endpoints**  
 
-- **GET /api/contests**: Fetch upcoming contests with pagination.
-- **GET /api/contests/past**: Fetch past contests with pagination.
-- **POST /api/contests/bookmark**: Bookmark a contest.
-- **GET /api/contests/bookmarks**: Get bookmarked contests.
-- **DELETE /api/contests/bookmark**: Remove a bookmarked contest.
-- **GET /api/contests/:contestId**: Fetch contest details by contestId.
-- **PUT /api/contests/:contestId/youtube-link**: Update contest YouTube URL by contestId.
+#### 🔑 **Authentication Endpoints**  
+- **`POST /api/auth/signup`** → 📝 **Register** a new user.  
+- **`POST /api/auth/login`** → 🔐 **Login** and authenticate an existing user.  
 
-### Models
+#### 🗓️ **Contest Management Endpoints**  
 
-- **User**: Represents a user with fields for name, email, password, and bookmarks.
-- **Contest**: Represents a contest with fields for name, platform, URL, start time, end time, and YouTube URL.
+- **`GET /api/contests`** → 📅 Fetch upcoming contests with pagination.  
+- **`GET /api/contests/past`** → ⏳ Fetch past contests with pagination.  
+- **`POST /api/contests/bookmark`** → ⭐ Bookmark a contest.  
+- **`GET /api/contests/bookmarks`** → 📖 Retrieve all bookmarked contests.  
+- **`DELETE /api/contests/bookmark`** → ❌ Remove a bookmarked contest.  
+- **`GET /api/contests/:contestId`** → 🔎 Get details of a specific contest using its ID.  
+- **`PUT /api/contests/:contestId/youtube-link`** → 🎥 Link or update YouTube video solutions for a contest.  
 
-### Middleware
+###  🗂️ **Database Models**  
 
-- **authMiddleware**: Middleware for authenticating users using JWT tokens.
+The backend uses **MongoDB** to store data efficiently.  
 
-### Controllers
+- **🧑‍💼 User Model**  
+  - **Name** → User's full name.  
+  - **Email** → Unique identifier for each user.  
+  - **Password** → Securely stored using encryption.  
+  - **Bookmarks** → List of contest IDs bookmarked by the user.  
 
-- **contestController**: Contains the logic for fetching contests from the database.
+- **🏁 Contest Model**  
+  - **Name** → Contest name.  
+  - **Platform** → Codeforces, CodeChef, or LeetCode.  
+  - **URL** → Link to the contest page.  
+  - **Start Time & End Time** → Timestamps for contest duration.  
+  - **YouTube URL** → Optional YouTube solution link.  
 
-## Contests Scrapper
+### 🛡️ **Middleware**  
 
-### Services
+Middleware ensures secure and authenticated access to protected routes using **JWT (JSON Web Token)**.  
 
-- **connectDB**: Service for connecting to the MongoDB database.
-- **contestsService**: Service for fetching contests from different platforms and updating the database.
+- **`authMiddleware.js`** → Validates user tokens, protecting contest-related routes and user-specific actions.  
+  - ✅ Checks if the JWT token is present and valid.  
+  - ✅ Ensures only authenticated users can bookmark contests or link YouTube videos.  
 
-### Scrapers
+## 📌 **Contests Scraper** (`contests-scrapper/`)  
 
-- **codeforcesScraper**: Scraper for fetching contests from Codeforces.
-- **codechefScraper**: Scraper for fetching contests from CodeChef.
-- **leetcodeScraper**: Scraper for fetching contests from LeetCode.
+The **Contests Scraper** is responsible for **fetching contest data** from various coding platforms and storing it in the database. It ensures that users have access to the latest and most accurate contest information.  
 
-## Frontend
+> Supported Platforms:  
+> ✅ **Codeforces**  
+> ✅ **CodeChef**  
+> ✅ **LeetCode**  
 
-### Pages
+### ⚙️ **Services**  
 
-- **Home**: Displays upcoming contests with filters and pagination.
-- **PastContests**: Displays past contests with filters and pagination.
-- **Login**: Login page for users.
-- **Signup**: Signup page for new users.
-- **LinkSolution**: Page for linking YouTube video solutions to past contests.
+The scraper uses the following services for managing database connections and handling data:  
 
-### Components
+- 🗄️ **`connectDB.js`** → Establishes a connection to the **MongoDB** database using Mongoose. Ensures stable and secure data management.  
+- 🔎 **`contestsService.js`** → Manages the entire scraping process, calls platform-specific scrapers, and updates contest information in the database.  
 
-- **Navbar**: Navigation bar with links to different pages and theme toggle.
-- **ContestCard**: Card component for displaying contest details.
-- **PlatformFilter**: Component for filtering contests by platform.
-- **Pagination**: Component for pagination.
-- **ProtectedRoute**: Component for protecting routes that require authentication.
+### 🧑‍💻 **Scrapers**  
 
-### Context
+Each platform has a dedicated scraper responsible for extracting contest data using platform APIs or web scraping.  
 
-- **AuthContext**: Context for managing user authentication state.
-- **ThemeContext**: Context for managing theme (dark/light) state.
+- 🟢 **`codeforcesScraper.js`** →  
+  - Fetches **upcoming and past contests** from **Codeforces** using its public API.  
+  - Efficiently extracts contest name, contest URL, start time, and duration.  
 
-## YouTube Playlist Fetcher
+- 🟠 **`codechefScraper.js`** →  
+  - Fetches contest data from **past, present, and future contests** for **CodeChef**.  
+  - Efficiently extracts contest name, contest URL, contest start time, and contest end time. 
 
-### Services
+- 🟡 **`leetcodeScraper.js`** →  
+  - Utilizes **LeetCode's API** and runs **GraphQL queries** to fetch **upcoming and past contests**.  
+  - Efficiently extracts contest title, contest URL, start time, and contest duration.  
 
-- **connectDB**: Service for connecting to the MongoDB database.
-- **youtubeService**: Service for fetching videos from YouTube playlists.
-- **fileService**: Service for reading and writing data to JSON files.
+### 🕰️ **Automated Scheduling**  
 
-### Handlers
+The scraper service uses **Node.js Cron Jobs**, which can be configured to run at regular intervals. This ensures the contest database stays up-to-date.  
 
-- **dataHandler**: Handler for fetching and storing YouTube playlist videos.
+## 📌 **Frontend** (`frontend/`)  
 
-### Comparators
+The **Frontend** is built using **React + Vite** for fast performance and an intuitive user experience. It allows users to seamlessly track contests, bookmark them, and link YouTube solutions. The UI is responsive and supports both **light** and **dark** themes.  
 
-- **codeforcesComparator**: Comparator for matching Codeforces contests with YouTube videos.
-- **codechefComparator**: Comparator for matching CodeChef contests with YouTube videos.
-- **leetcodeComparator**: Comparator for matching LeetCode contests with YouTube videos.
+### 🧑‍💻 **Pages**  
 
-## Environment Variables
+- 🏠 **Home** → View all **upcoming contests** with easy filtering and search options.  
+- 📅 **Past Contests** → Browse **past contests** with the option to watch linked YouTube solutions.  
+- 🔐 **Login** → Secure **authentication page** for user login.  
+- ✍ **Signup** → Register new users with a simple sign-up form.  
+- 🔗 **Link Solution** → Attach **YouTube video solutions** to past contests for reference.  
 
-The following environment variables are required for the project:
+### 🧩 **Components**  
 
-- **MONGO_URI**: MongoDB connection URI.
-- **JWT_SECRET**: Secret key for JWT authentication.
-- **YOUTUBE_API_KEY**: API key for YouTube Data API.
-- **CODEFORCES_YT_PLAYLIST_ID**: YouTube playlist ID for Codeforces.
-- **CODECHEF_YT_PLAYLIST_ID**: YouTube playlist ID for CodeChef.
-- **LEETCODE_YT_PLAYLIST_ID**: YouTube playlist ID for LeetCode.
+- 🧭 **Navbar** → Responsive **navigation bar** with options for **theme toggle** and accessing user details.  
+- 🏷️ **ContestCard** → Displays detailed information about contests using a clean, card-based UI.  
+- 🛠️ **PlatformFilter** → Easily filter contests based on their platform (**Codeforces**, **LeetCode**, or **CodeChef**).  
+- 🔎 **Pagination** → Provides smooth and optimized pagination for large contest datasets.  
+- 🔒 **ProtectedRoute** → Ensures only **authenticated users** can access specific pages using JWT.  
 
-## Running the Project
+### 🧑‍🤝‍🧑 **Context Management**  
 
-### Backend
+The app uses **React Context API** for state management, ensuring a seamless user experience:  
 
-1. Navigate to the `backend` directory.
-2. Install dependencies: `npm install`
-3. Start the server: `npm start`
+- 🛡️ **AuthContext** →  
+  - Manages user **authentication** state across the app.  
+  - Handles user login, registration, and logout functionality.  
 
-### Contests Scrapper
+- 🌙 **ThemeContext** →  
+  - Allows users to toggle between **light** and **dark** themes.  
+  - Automatically persists theme preferences using local storage.  
 
-1. Navigate to the `contests-scrapper` directory.
-2. Install dependencies: `npm install`
-3. Start the scrapper: `npm start`
+## 📌 **YouTube Playlist Fetcher** (`yt-playlist-fetcher/`)  
 
-### Frontend
+The **YouTube Playlist Fetcher** is responsible for **fetching video solutions** from curated YouTube playlists. It intelligently matches these videos with their respective **past contests** using efficient algorithms. This feature helps users find reliable video solutions quickly.  
 
-1. Navigate to the `frontend` directory.
-2. Install dependencies: `npm install`
-3. Start the development server: `npm run dev`
+> Platforms Supported for Video Matching:  
+> ✅ **Codeforces**  
+> ✅ **CodeChef**  
+> ✅ **LeetCode**  
 
-### YouTube Playlist Fetcher
+### ⚙️ **Services**  
 
-1. Navigate to the `yt-playlist-fetcher` directory.
-2. Install dependencies: `npm install`
-3. Start the fetcher: `npm start`
+The following services handle the **database connection** and the **YouTube API integration**:  
+
+- 🗄️ **`connectDB.js`** →  
+  - Establishes a stable connection to the **MongoDB** database.  
+  - Ensures smooth data storage and retrieval for matched videos.  
+
+- 📹 **`youtubeService.js`** →  
+  - Connects to the **YouTube Data API** using the provided API key.  
+  - Fetches videos from playlists and extracts metadata like title, description, and URL.  
+
+- 📁 **`fileService.js`** →  
+  - Handles the reading and writing of video data to **JSON files**.  
+  - Ensures efficient storage of video details for offline access.  
+
+### 🛠️ **Handlers**  
+
+- 🔎 **`dataHandler.js`** →  
+  - Controls the overall process of **fetching and storing YouTube videos**.  
+  - Ensures videos are processed, filtered, and associated with relevant contests.  
+
+### 🧑‍💻 **Comparators**  
+
+Specialized comparators efficiently **match contests with video solutions** using text similarity algorithms:  
+
+- 🟢 **`codeforcesComparator.js`** →  
+  - Matches videos with **Codeforces contests** using intelligent title matching.  
+
+- 🟠 **`codechefComparator.js`** →  
+  - Compares contest data and identifies relevant videos for **CodeChef contests**.  
+
+- 🟡 **`leetcodeComparator.js`** →  
+  - Fetches solutions from LeetCode playlists and links them to past **LeetCode contests**.  
+
+### 🕰️ **Automated Scheduling**  
+
+The scraper service uses **Node.js Cron Jobs** to automate video fetching. It can be configured to run at regular intervals to ensure:  
+- ✅ **The contest database stays up-to-date**  
+- ✅ **Videos are fetched as soon as they are available**  
+- ✅ **Manual intervention is minimized**  
+
+Once a solution video is uploaded, the system will **automatically fetch and link it** to the respective contest without requiring any manual effort.
+
+## ⚙️ Environment Variables  
+
+Set the following variables in a `.env` file before running the project:  
+
+```env
+MONGO_URI=your-mongodb-connection-uri
+JWT_SECRET=your-jwt-secret-key
+YOUTUBE_API_KEY=your-youtube-data-api-key
+CODEFORCES_YT_PLAYLIST_ID=your-codeforces-playlist-id
+CODECHEF_YT_PLAYLIST_ID=your-codechef-playlist-id
+LEETCODE_YT_PLAYLIST_ID=your-leetcode-playlist-id
+```
+
+## 🚀 **Running the Project**  
+
+Follow these steps to set up and run each part of the Contest Tracker project.  
+
+### 🛡️ **Backend**  
+
+1. 📁 Navigate to the `backend` directory:  
+    ```bash
+    cd backend
+    ```  
+2. 📦 Install dependencies:  
+    ```bash
+    npm install
+    ```  
+3. 🏁 Start the server:  
+    ```bash
+    npm start
+    ```  
+
+### 🧹 **Contests Scraper**  
+
+1. 📁 Navigate to the `contests-scrapper` directory:  
+    ```bash
+    cd contests-scrapper
+    ```  
+2. 📦 Install dependencies:  
+    ```bash
+    npm install
+    ```  
+3. 🚀 Start the scraper:  
+    ```bash
+    npm start
+    ```  
+
+### 💻 **Frontend**  
+
+1. 📁 Navigate to the `frontend` directory:  
+    ```bash
+    cd frontend
+    ```  
+2. 📦 Install dependencies:  
+    ```bash
+    npm install
+    ```  
+3. 🌐 Start the development server:  
+    ```bash
+    npm run dev
+    ```  
+4. 🔎 Access the app at:  
+    ```bash
+    http://localhost:5173
+    ```  
+
+### 🎥 **YouTube Playlist Fetcher**  
+
+1. 📁 Navigate to the `yt-playlist-fetcher` directory:  
+    ```bash
+    cd yt-playlist-fetcher
+    ```  
+2. 📦 Install dependencies:  
+    ```bash
+    npm install
+    ```  
+3. 🚀 Start the fetcher:  
+    ```bash
+    npm start
+    ```  
+
+✅ **Note:** Ensure your `.env` files are correctly configured in each directory before running the services.  
