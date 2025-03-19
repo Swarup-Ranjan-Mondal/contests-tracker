@@ -7,13 +7,14 @@ const Signup = () => {
   const { signup } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
 
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -34,8 +35,18 @@ const Signup = () => {
   };
 
   return (
-    <div className={`min-h-screen p-6 ${theme === "dark" ? "bg-gray-950 text-white" : "bg-gray-100 text-gray-900"}`}>
-      <div className={`w-full max-w-md mx-auto mt-10 rounded-lg shadow-lg p-6 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}>
+    <div
+      className={`min-h-screen p-6 ${
+        theme === "dark"
+          ? "bg-gray-950 text-white"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <div
+        className={`w-full max-w-md mx-auto mt-10 rounded-lg shadow-lg p-6 ${
+          theme === "dark" ? "bg-gray-900" : "bg-white"
+        }`}
+      >
         <h2 className="text-2xl font-bold mb-4 text-center">Signup</h2>
         {error && <p className="text-red-500 mb-2 text-center">{error}</p>}
 
@@ -86,7 +97,7 @@ const Signup = () => {
           />
           <button
             type="submit"
-            className={`w-full p-3 rounded-lg text-white font-semibold transition-all ${
+            className={`w-full p-3 cursor-pointer rounded-lg text-white font-semibold transition-all ${
               loading
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 active:scale-95"
@@ -96,7 +107,11 @@ const Signup = () => {
           </button>
         </form>
 
-        <p className={`mt-4 text-center ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+        <p
+          className={`mt-4 text-center ${
+            theme === "dark" ? "text-gray-400" : "text-gray-600"
+          }`}
+        >
           Already have an account?{" "}
           <Link to="/login" className="text-blue-500 hover:underline">
             Sign in

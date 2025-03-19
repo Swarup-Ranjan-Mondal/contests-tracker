@@ -58,7 +58,7 @@ const Login = () => {
           />
           <button
             type="submit"
-            className={`w-full p-3 rounded-lg text-white font-semibold transition-all ${
+            className={`w-full p-3 cursor-pointer rounded-lg text-white font-semibold transition-all ${
               loading
                 ? "bg-gray-600 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 active:scale-95"

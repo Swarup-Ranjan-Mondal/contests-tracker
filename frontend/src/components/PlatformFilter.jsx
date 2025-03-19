@@ -10,7 +10,7 @@ const PlatformFilter = ({ selectedPlatforms, togglePlatform }) => {
       {platforms.map((platform) => (
         <button
           key={platform}
-          className={`px-4 py-2 rounded font-semibold transition-all ${
+          className={`px-4 py-2 cursor-pointer rounded font-semibold transition-all ${
             selectedPlatforms.includes(platform)
               ? "bg-blue-600 text-white"
               : theme === "dark"

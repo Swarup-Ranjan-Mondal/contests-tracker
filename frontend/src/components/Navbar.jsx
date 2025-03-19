@@ -5,7 +5,7 @@ import AuthContext from "../context/AuthContext";
 import ThemeContext from "../context/ThemeContext";
 
 const Navbar = () => {
-  const { user, setUser, logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const [menuOpen, setMenuOpen] = useState(false);
@@ -19,14 +19,14 @@ const Navbar = () => {
     <nav className="bg-blue-600 text-white p-4">
       {/* Desktop Navbar */}
       <div className="hidden md:flex justify-between items-center">
-        <div className="flex justify-between items-center gap-4">
+        <Link to="/" className="flex justify-between items-center gap-4">
           <img
             src={"/icon.png"}
             alt={`Tracker logo`}
             className="h-8 w-8 object-contain"
           />
           <h1 className="text-2xl font-bold">Contest Tracker</h1>
-        </div>
+        </Link>
         <div className="space-x-4 flex items-center">
           <Link to="/" className="hover:underline">
             Home
@@ -35,7 +35,10 @@ const Navbar = () => {
             Past Contests
           </Link>
           {user ? (
-            <button onClick={onLogout} className="hover:underline">
+            <button
+              onClick={onLogout}
+              className="hover:underline cursor-pointer"
+            >
               Logout
             </button>
           ) : (
@@ -46,7 +49,7 @@ const Navbar = () => {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="ml-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700"
+            className="ml-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700 cursor-pointer"
           >
             {theme === "dark" ? (
               <Sun size={24} className="text-yellow-400" />
@@ -60,12 +63,12 @@ const Navbar = () => {
       {/* Mobile Navbar */}
       <div className="md:hidden flex items-center justify-between">
         <button
-          className="focus:outline-none"
+          className="focus:outline-none cursor-pointer"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
-        <div className="flex justify-between items-center gap-4">
+        <Link to="/" className="flex justify-between items-center gap-4">
           <img
             src={"/icon.png"}
             alt={`Tracker logo`}
@@ -74,11 +77,11 @@ const Navbar = () => {
           <h1 className="text-2xl font-bold flex-1 text-center">
             Contest Tracker
           </h1>
-        </div>
+        </Link>
         {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
-          className="ml-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700"
+          className="ml-4 p-2 rounded-full bg-gray-800 hover:bg-gray-700 cursor-pointer"
         >
           {theme === "dark" ? (
             <Sun size={24} className="text-yellow-400" />
@@ -106,7 +109,10 @@ const Navbar = () => {
             Past Contests
           </Link>
           {user ? (
-            <button onClick={onLogout} className="py-2 hover:underline">
+            <button
+              onClick={onLogout}
+              className="py-2 hover:underline cursor-pointer"
+            >
               Logout
             </button>
           ) : (

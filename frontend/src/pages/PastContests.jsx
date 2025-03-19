@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import ContestCard from "../components/ContestCard";
 import PlatformFilter from "../components/PlatformFilter";
 import Pagination from "../components/Pagination";
@@ -16,14 +16,29 @@ const PastContests = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const togglePlatform = (platform) => {
+  const togglePlatform = useCallback((platform) => {
     setSelectedPlatforms((prev) =>
       prev.includes(platform)
         ? prev.filter((p) => p !== platform)
         : [...prev, platform]
     );
     setPage(1);
-  };
+  }, []);
+
+  const fetchBookmarkedContests = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/contests/bookmarks`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      if (response.status === 401) return logout();
+
+      const bookmarks = await response.json();
+      setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
+    } catch (error) {
+      console.error("Error fetching bookmarked contests:", error);
+    }
+  }, []);
 
   // Fetch past contests
   useEffect(() => {
@@ -63,21 +78,6 @@ const PastContests = () => {
 
   // Fetch bookmarked contests
   useEffect(() => {
-    const fetchBookmarkedContests = async () => {
-      try {
-        const response = await fetch(`/api/contests/bookmarks`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        if (response.status === 401) return logout();
-
-        const bookmarks = await response.json();
-        setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
-      } catch (error) {
-        console.error("Error fetching bookmarked contests:", error);
-      }
-    };
-
     fetchBookmarkedContests();
   }, []);
 
@@ -107,7 +107,8 @@ const PastContests = () => {
                   key={contest._id}
                   contest={contest}
                   isPast={true}
-                  isBookmarked={bookmarkedContests.has(contest._id)}
+                  bookmarks={bookmarkedContests}
+                  fetchBookmarkedContests={fetchBookmarkedContests}
                 />
               ))
             ) : (

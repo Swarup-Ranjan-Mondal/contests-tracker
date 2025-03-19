@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import ContestCard from "../components/ContestCard";
 import PlatformFilter from "../components/PlatformFilter";
 import Pagination from "../components/Pagination";
@@ -16,14 +16,29 @@ const Home = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  const togglePlatform = (platform) => {
+  const togglePlatform = useCallback((platform) => {
     setSelectedPlatforms((prev) =>
       prev.includes(platform)
         ? prev.filter((p) => p !== platform)
         : [...prev, platform]
     );
     setCurrentPage(1);
-  };
+  }, []);
+
+  const fetchBookmarkedContests = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/contests/bookmarks`, {
+        method: "GET",
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      if (response.status === 401) return logout();
+
+      const bookmarks = await response.json();
+      setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
+    } catch (error) {
+      console.error("Error fetching bookmarked contests:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchContests = async () => {
@@ -57,28 +72,19 @@ const Home = () => {
     fetchContests();
   }, [selectedPlatforms, currentPage]);
 
-  // Fetch bookmarked contests once on mount
+  // Fetch bookmarked contests
   useEffect(() => {
-    const fetchBookmarkedContests = async () => {
-      try {
-        const response = await fetch(`/api/contests/bookmarks`, {
-          method: "GET",
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        if (response.status === 401) return logout();
-
-        const bookmarks = await response.json();
-        setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
-      } catch (error) {
-        console.error("Error fetching bookmarked contests:", error);
-      }
-    };
-    
     fetchBookmarkedContests();
   }, []);
 
   return (
-    <div className={`p-6 min-h-screen ${theme === "dark" ? "bg-gray-950 text-white" : "bg-gray-100 text-gray-900"}`}>
+    <div
+      className={`p-6 min-h-screen ${
+        theme === "dark"
+          ? "bg-gray-950 text-white"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
       <h2 className="text-2xl font-bold mb-4">Upcoming Contests</h2>
 
       <PlatformFilter
@@ -96,11 +102,16 @@ const Home = () => {
                 <ContestCard
                   key={contest._id}
                   contest={contest}
-                  isBookmarked={bookmarkedContests?.has(contest._id)}
+                  bookmarks={bookmarkedContests}
+                  fetchBookmarkedContests={fetchBookmarkedContests}
                 />
               ))
             ) : (
-              <p className={`text-center ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+              <p
+                className={`text-center ${
+                  theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
+              >
                 No contests found.
               </p>
             )}

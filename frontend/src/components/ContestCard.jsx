@@ -35,7 +35,7 @@ const getPlatformDisplayName = (platform) => {
     .join(" ");
 };
 
-const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
+const ContestCard = ({ contest, isPast = false, bookmarks, fetchBookmarkedContests }) => {
   const { user, logout } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
   const [timeInfo, setTimeInfo] = useState(
     getTimeInfo(contest.startTime, isPast)
   );
-  const [bookmarked, setBookmarked] = useState(isBookmarked);
+  const [bookmarked, setBookmarked] = useState(bookmarks.has(contest._id));
 
   useEffect(() => {
     if (!isPast) {
@@ -53,6 +53,10 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
       return () => clearInterval(interval);
     }
   }, [contest.startTime, isPast]);
+
+  useEffect(() => {
+    setBookmarked(bookmarks.has(contest._id))
+  }, [bookmarks])
 
   function getTimeInfo(startTime, isPast) {
     const now = new Date();
@@ -95,6 +99,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
 
       if (response.ok) {
         setBookmarked(!bookmarked);
+        fetchBookmarkedContests();
       } else if (response.status === 401) {
         return logout();
       } else {
@@ -115,7 +120,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
     >
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{contest.name}</h3>
-        <button onClick={handleBookmark} className="text-2xl text-yellow-400">
+        <button onClick={handleBookmark} className="text-2xl text-yellow-400 cursor-pointer">
           {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
         </button>
       </div>
@@ -176,7 +181,7 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
         {isPast && (
           <button
             onClick={() => navigate(`/link-solution/${contest._id}`)}
-            className="text-yellow-400 hover:text-yellow-300 flex items-center gap-2"
+            className="text-yellow-400 hover:text-yellow-300 flex items-center gap-2 cursor-pointer"
           >
             <FaEdit size={18} />
             Edit

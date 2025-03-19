@@ -233,13 +233,13 @@ const LinkSolution = () => {
               <button
                 onClick={() => navigate("/past")}
                 type="button"
-                className="w-full p-3 bg-gray-600 hover:bg-gray-500 rounded-lg font-semibold text-white"
+                className="w-full p-3 bg-gray-600 hover:bg-gray-500 rounded-lg font-semibold text-white cursor-pointer"
               >
                 ← Back to Past Contests
               </button>
               <button
                 type="submit"
-                className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white"
+                className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-white cursor-pointer"
               >
                 Submit
               </button>
