@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+
 import User from '../models/User.js';
 import Contest from '../models/Contest.js';
 import authMiddleware from '../middleware/authMiddleware.js';

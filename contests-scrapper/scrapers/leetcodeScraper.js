@@ -7,7 +7,7 @@ const fetchLeetcodeContests = async () => {
   try {
     console.log("🔎 Fetching LeetCode contests...");
 
-    // ✅ Fetch upcoming contests
+    // Fetch upcoming contests
     const upcomingResponse = await axios.post(
       LEETCODE_API,
       {
@@ -23,12 +23,13 @@ const fetchLeetcodeContests = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    const upcomingContests = upcomingResponse?.data?.data?.upcomingContests || [];
+    const upcomingContests =
+      upcomingResponse?.data?.data?.upcomingContests || [];
     console.log(`✅ Fetched ${upcomingContests.length} upcoming contests`);
 
-    // ✅ Fetch past contests (5 pages)
+    // Fetch past contests (10 pages)
     const pastContests = [];
-    const numPerPage = 20; // Number of contests per page
+    const numPerPage = 20;
 
     for (let pageNo = 1; pageNo <= 10; pageNo++) {
       console.log(`📦 Fetching page ${pageNo} of past contests...`);
@@ -65,14 +66,16 @@ const fetchLeetcodeContests = async () => {
 
     console.log(`📊 Total past contests fetched: ${pastContests.length}`);
 
-    // ✅ Combine and format contests
-    const allContests = [...upcomingContests, ...pastContests].map((contest) => ({
-      name: contest.title,
-      url: `${LEETCODE_BASE_URL}${contest.titleSlug}`,
-      start_time: new Date(contest.startTime * 1000),
-      end_time: new Date((contest.startTime + contest.duration) * 1000),
-      platform: "leetcode",
-    }));
+    // Combine and format contests
+    const allContests = [...upcomingContests, ...pastContests].map(
+      (contest) => ({
+        name: contest.title,
+        url: `${LEETCODE_BASE_URL}${contest.titleSlug}`,
+        start_time: new Date(contest.startTime * 1000),
+        end_time: new Date((contest.startTime + contest.duration) * 1000),
+        platform: "leetcode",
+      })
+    );
 
     console.log(`📦 Total contests (Upcoming + Past): ${allContests.length}`);
     return allContests;

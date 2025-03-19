@@ -1,11 +1,9 @@
 import mongoose from 'mongoose';
+import { MONGO_URI } from "../../config/config.js";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(MONGO_URI);
     console.log('MongoDB Connected');
   } catch (error) {
     console.error('MongoDB Connection Failed', error);

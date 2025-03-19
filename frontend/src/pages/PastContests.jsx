@@ -61,7 +61,7 @@ const PastContests = () => {
     fetchContests();
   }, [selectedPlatforms, page]);
 
-  // Fetch bookmarked contests once on mount
+  // Fetch bookmarked contests
   useEffect(() => {
     const fetchBookmarkedContests = async () => {
       try {

@@ -7,7 +7,7 @@ const contestsService = async () => {
   try {
     console.log("🔍 Fetching contests...");
 
-    // Fetch contests from each platform with error handling
+    // Fetch contests from each platform
     const [codeforces, codechef, leetcode] = await Promise.all([
       fetchCodeforcesContests().catch((err) => {
         console.error("❌ Error fetching Codeforces:", err);
@@ -27,7 +27,7 @@ const contestsService = async () => {
     console.log("✅ CodeChef Contests:", codechef.length, "contests");
     console.log("✅ LeetCode Contests:", leetcode.length, "contests");
 
-    // If all arrays are empty, return early
+    // If no contests at all, return early
     if (
       codeforces.length === 0 &&
       codechef.length === 0 &&
@@ -40,7 +40,7 @@ const contestsService = async () => {
     // Combine all contests
     let allContests = [...codeforces, ...codechef, ...leetcode];
 
-    // Debugging: Log invalid date formats before filtering
+    // Log invalid date formats and filter them
     allContests.forEach((contest, index) => {
       if (!contest.start_time || !contest.end_time) {
         console.warn(
@@ -79,7 +79,7 @@ const contestsService = async () => {
         name: contest.name,
         platform: contest.platform,
         url: contest.url,
-        startTime: new Date(contest.start_time), // Ensure Date format
+        startTime: new Date(contest.start_time),
         endTime: new Date(contest.end_time),
       }));
 

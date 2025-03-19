@@ -1,29 +1,29 @@
 import stringSimilarity from "string-similarity";
 import Fuse from "fuse.js";
 
-// ✅ Normalize text (clean unnecessary words & characters, but KEEP contest numbers)
+// Normalize text (clean unnecessary words & characters, but KEEP contest numbers)
 function normalizeText(text) {
     return text
         .toLowerCase()
-        .replace(/leetcode\s*/i, "")  // Remove "LeetCode" prefix
-        .replace(/[^a-z0-9\s-]/gi, "")  // Remove special characters (keep "-" for readability)
-        .replace(/\s+/g, " ")          // Trim extra spaces
+        .replace(/leetcode\s*/i, "")
+        .replace(/[^a-z0-9\s-]/gi, "")
+        .replace(/\s+/g, " ")
         .trim();
 }
 
-// ✅ Extract contest number (e.g., "Weekly Contest 387" → 387)
+// Extract contest number (e.g., "Weekly Contest 387" → 387)
 function extractContestNumber(name) {
     const match = name.match(/\b(?:weekly|biweekly)?\s*contest\s*(\d+)\b/i);
     return match ? parseInt(match[1], 10) : null;
 }
 
-// ✅ Extract contest type (e.g., "Weekly Contest", "Biweekly Contest")
+// Extract contest type (e.g., "Weekly Contest", "Biweekly Contest")
 function extractContestType(name) {
     const match = name.match(/\b(weekly contest|biweekly contest)\b/i);
     return match ? match[1].toLowerCase() : null;
 }
 
-// ✅ Find the best matching YouTube video
+// Find the best matching YouTube video
 function findBestMatchingVideo(contest, videoList) {
     const contestName = normalizeText(contest.name);
     const contestType = extractContestType(contest.name);
@@ -37,17 +37,17 @@ function findBestMatchingVideo(contest, videoList) {
         const videoType = extractContestType(video.title);
         const videoNumber = extractContestNumber(video.title);
 
-        // 🎯 Priority 1: Exact contest number match
+        // Priority 1: Exact contest number match
         if (contestNumber !== null && videoNumber !== null && contestNumber !== videoNumber) {
             continue;
         }
 
-        // 🎯 Priority 2: Exact contest type match
+        // Priority 2: Exact contest type match
         if (contestType && videoType && contestType !== videoType) {
             continue;
         }
 
-        // 🔥 Compute similarity score
+        // Compute similarity score
         const similarity = stringSimilarity.compareTwoStrings(contestName, videoTitle);
 
         if (similarity > bestSimilarity) {
@@ -56,11 +56,11 @@ function findBestMatchingVideo(contest, videoList) {
         }
     }
 
-    // 🔥 Fallback: Fuzzy search if no good match is found
+    // Fallback: Fuzzy search if no good match is found
     if (!bestMatch || bestSimilarity < 0.35) {
         const fuse = new Fuse(videoList, {
             keys: ["title"],
-            threshold: 0.4,  // Slightly relaxed threshold
+            threshold: 0.4,
             includeScore: true
         });
 
@@ -70,7 +70,7 @@ function findBestMatchingVideo(contest, videoList) {
             const candidate = results[0].item;
             const candidateNumber = extractContestNumber(candidate.title);
 
-            // Ensure contest number is either exact OR close (±2)
+            // Ensure contest number is either exact or close
             if (candidateNumber && Math.abs(candidateNumber - contestNumber) <= 2) {
                 bestMatch = candidate;
                 bestSimilarity = stringSimilarity.compareTwoStrings(contestName, normalizeText(bestMatch.title));
@@ -81,7 +81,7 @@ function findBestMatchingVideo(contest, videoList) {
     return bestMatch;
 }
 
-// ✅ Match LeetCode contests with YouTube videos
+// Match LeetCode contests with YouTube videos
 export async function matchLeetCodeContestsWithVideos(contestList, videoList) {
     return contestList.map(contest => {
         const bestMatch = findBestMatchingVideo(contest, videoList);

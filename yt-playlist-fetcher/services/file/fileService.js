@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { DATA_STORE_PATH } from "../../config/config.js";
 
-// Ensure data directory exists
+// Make 'data' folder if data folder doesn't exist
 if (!fs.existsSync(DATA_STORE_PATH)) {
   fs.mkdirSync(DATA_STORE_PATH, { recursive: true });
 }

@@ -5,12 +5,12 @@ import Fuse from "fuse.js";
 function normalizeText(text) {
     return text
         .toLowerCase()
-        .replace(/[#\.\-\|:,()]/g, "")  // Remove special characters
-        .replace(/\s+/g, " ")           // Remove extra spaces
+        .replace(/[#\.\-\|:,()]/g, "")
+        .replace(/\s+/g, " ")
         .trim();
 }
 
-// Extract round number (e.g., "Round 1009", "#500")
+// Extract round number (e.g., "Round 1009")
 function extractRoundNumber(name) {
     const match = name.match(/\b(?:round|#)\s*(\d+)\b/i);
     return match ? parseInt(match[1], 10) : null;
@@ -72,7 +72,7 @@ function findBestMatchingVideo(contest, videoList) {
     if (!bestMatch) {
         const fuse = new Fuse(videoList, {
             keys: ["title"],
-            threshold: 0.2,  // Lower threshold for stricter matching
+            threshold: 0.2,
             includeScore: true
         });
 
@@ -83,7 +83,7 @@ function findBestMatchingVideo(contest, videoList) {
         }
     }
 
-    return bestSimilarity > 0.4 ? bestMatch : null;  // Higher threshold for acceptance
+    return bestSimilarity > 0.4 ? bestMatch : null;
 }
 
 // Match Codeforces contests with YouTube videos

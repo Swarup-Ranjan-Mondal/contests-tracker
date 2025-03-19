@@ -5,9 +5,9 @@ import Fuse from "fuse.js";
 function normalizeText(text) {
     return text
         .toLowerCase()
-        .replace(/(rated till \d+ star|rated upto \d+)/gi, "")  // Remove "Rated till X star" and similar phrases
-        .replace(/[^a-z0-9\s]/gi, "")  // Remove special characters except spaces
-        .replace(/\s+/g, " ")          // Remove extra spaces
+        .replace(/(rated till \d+ star|rated upto \d+)/gi, "")
+        .replace(/[^a-z0-9\s]/gi, "")
+        .replace(/\s+/g, " ")
         .trim();
 }
 
@@ -60,7 +60,7 @@ function findBestMatchingVideo(contest, videoList) {
     if (!bestMatch) {
         const fuse = new Fuse(videoList, {
             keys: ["title"],
-            threshold: 0.3,  // Slightly relaxed threshold for CodeChef
+            threshold: 0.3,
             includeScore: true
         });
 
@@ -69,7 +69,7 @@ function findBestMatchingVideo(contest, videoList) {
             const candidate = results[0].item;
             const candidateNumber = extractContestNumber(candidate.title);
 
-            // Ensure the contest number is either exact OR not completely different
+            // Ensure the contest number is either exact or not completely different
             if (candidateNumber && Math.abs(candidateNumber - contestNumber) <= 2) {  
                 bestMatch = candidate;
                 bestSimilarity = stringSimilarity.compareTwoStrings(contestName, normalizeText(bestMatch.title));
