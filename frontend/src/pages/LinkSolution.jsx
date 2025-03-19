@@ -38,6 +38,30 @@ const LinkSolution = () => {
     fetchContestDetails();
   }, [contestId, user]);
 
+  // Platform Logo Paths
+  const getPlatformLogo = (platform, theme) => {
+    switch (platform.toLowerCase()) {
+      case "leetcode":
+        return "/logos/leetcode.png";
+      case "codeforces":
+        return "/logos/codeforces.png";
+      case "codechef":
+        return theme === "dark"
+          ? "/logos/codechef-dark.svg"
+          : "/logos/codechef.svg";
+      default:
+        return null;
+    }
+  };
+
+  // Convert platform name to Title Case
+  const getPlatformDisplayName = (platform) => {
+    return platform
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+  };
+
   const getFormattedTime = (dateString) => {
     const date = new Date(dateString);
 
@@ -78,14 +102,17 @@ const LinkSolution = () => {
     }
 
     try {
-      const response = await fetch(`/api/contests/${contest._id}/youtube-link`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ youtube_url: youtubeUrl }),
-      });
+      const response = await fetch(
+        `/api/contests/${contest._id}/youtube-link`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ youtube_url: youtubeUrl }),
+        }
+      );
 
       const data = await response.json();
       if (response.ok) {
@@ -126,7 +153,9 @@ const LinkSolution = () => {
         {message && (
           <p
             className={`mb-4 text-center ${
-              message.includes("successfully") ? "text-green-500" : "text-red-500"
+              message.includes("successfully")
+                ? "text-green-500"
+                : "text-red-500"
             }`}
           >
             {message}
@@ -140,9 +169,18 @@ const LinkSolution = () => {
           </div>
 
           <div className="flex justify-between gap-8">
-            <div className="w-1/2">
+            <div className="w-1/2 flex items-center gap-5">
+              {getPlatformLogo(contest.platform, theme) ? (
+                <img
+                  src={getPlatformLogo(contest.platform, theme)}
+                  alt={`${contest.platform} logo`}
+                  className="h-12 w-12 object-contain"
+                />
+              ) : null}
+              <div className="flex flex-col">
               <p className="text-gray-400 font-semibold">Platform:</p>
-              <p>{contest.platform}</p>
+              <p>{getPlatformDisplayName(contest.platform)}</p>
+              </div>
             </div>
             <div className="w-1/2">
               <p className="text-gray-400 font-semibold">Start Time:</p>
@@ -171,7 +209,9 @@ const LinkSolution = () => {
           {/* Form Section */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="text-gray-400 font-semibold">YouTube Solution URL</label>
+              <label className="text-gray-400 font-semibold">
+                YouTube Solution URL
+              </label>
               <div className="flex items-center gap-2 mt-1">
                 <FaYoutube className="text-red-500" size={36} />
                 <input

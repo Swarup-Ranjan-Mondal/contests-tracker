@@ -11,6 +11,30 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import ThemeContext from "../context/ThemeContext";
 
+// Platform Logo Paths
+const getPlatformLogo = (platform, theme) => {
+  switch (platform) {
+    case "leetcode":
+      return "/logos/leetcode.png";
+    case "codeforces":
+      return "/logos/codeforces.png";
+    case "codechef":
+      return theme !== "dark"
+        ? "/logos/codechef.svg"
+        : "/logos/codechef-dark.svg";
+    default:
+      return null;
+  }
+};
+
+// Convert platform name to Title Case
+const getPlatformDisplayName = (platform) => {
+  return platform
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+};
+
 const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
   const { user, logout } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
@@ -91,15 +115,25 @@ const ContestCard = ({ contest, isPast = false, isBookmarked = false }) => {
     >
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-semibold">{contest.name}</h3>
-        <div className="flex items-center gap-3">
-          <CalendarDays size={22} className="text-gray-400" />
-          <button onClick={handleBookmark} className="text-2xl text-yellow-400">
-            {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
-          </button>
-        </div>
+        <button onClick={handleBookmark} className="text-2xl text-yellow-400">
+          {bookmarked ? <FaBookmark /> : <FaRegBookmark />}
+        </button>
       </div>
 
-      <p className="text-gray-400 mt-1">{contest.platform}</p>
+      {/* Platform Section with Logo */}
+      <div className="flex items-center gap-3 mt-2">
+        {getPlatformLogo(contest.platform, theme) ? (
+          <img
+            src={getPlatformLogo(contest.platform, theme)}
+            alt={`${contest.platform} logo`}
+            className="h-9 w-9 object-contain"
+          />
+        ) : null}
+        <p className="text-gray-400">
+          {getPlatformDisplayName(contest.platform)}
+        </p>
+      </div>
+
       <p className="text-gray-500 mt-2">
         {new Date(contest.startTime).toLocaleString()}
       </p>
