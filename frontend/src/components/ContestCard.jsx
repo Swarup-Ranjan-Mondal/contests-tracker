@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { CalendarDays, Clock } from "lucide-react";
+import { Clock } from "lucide-react";
 import {
   FaRegBookmark,
   FaBookmark,
@@ -35,54 +35,69 @@ const getPlatformDisplayName = (platform) => {
     .join(" ");
 };
 
+// Get Real-Time Info for Contests
+function getTimeInfo(startTime, isPast, endTime) {
+  const now = new Date();
+  const contestDate = new Date(startTime);
+  const contestEndDate = new Date(endTime);
+
+  // Past Contest
+  if (isPast) {
+    const diffMs = now - contestDate;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMinutes < 60) return "Ended a few minutes ago";
+    if (diffHours < 24) return `Ended ${diffHours} hours ago`;
+    return `Happened ${diffDays} days ago`;
+  }
+
+  // Ongoing Contest
+  if (now >= contestDate && now <= contestEndDate) {
+    const remainingTimeMs = contestEndDate - now;
+    const hours = Math.floor((remainingTimeMs / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((remainingTimeMs / (1000 * 60)) % 60);
+    const seconds = Math.floor((remainingTimeMs / 1000) % 60);
+
+    return `Ends in ${hours}h ${minutes}m ${seconds}s`;
+  }
+
+  // Upcoming Contest
+  const futureDiff = contestDate - now;
+  if (futureDiff <= 0) return "Starts soon!";
+
+  const days = Math.floor(futureDiff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((futureDiff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((futureDiff / (1000 * 60)) % 60);
+  const seconds = Math.floor((futureDiff / 1000) % 60);
+
+  return `Starts in ${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
 const ContestCard = ({ contest, isPast = false, bookmarks, fetchBookmarkedContests }) => {
   const { user, logout } = useContext(AuthContext);
   const { theme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   const [timeInfo, setTimeInfo] = useState(
-    getTimeInfo(contest.startTime, isPast)
+    getTimeInfo(contest.startTime, isPast, contest.endTime)
   );
   const [bookmarked, setBookmarked] = useState(bookmarks.has(contest._id));
 
+  // Update Time Info Every Second for Upcoming and Ongoing Contests
   useEffect(() => {
-    if (!isPast) {
+    if (!isPast || (new Date(contest.endTime) > new Date())) {
       const interval = setInterval(() => {
-        setTimeInfo(getTimeInfo(contest.startTime, isPast));
+        setTimeInfo(getTimeInfo(contest.startTime, isPast, contest.endTime));
       }, 1000);
       return () => clearInterval(interval);
     }
-  }, [contest.startTime, isPast]);
+  }, [contest.startTime, contest.endTime, isPast]);
 
   useEffect(() => {
-    setBookmarked(bookmarks.has(contest._id))
-  }, [bookmarks])
-
-  function getTimeInfo(startTime, isPast) {
-    const now = new Date();
-    const contestDate = new Date(startTime);
-    const diffMs = now - contestDate;
-
-    if (isPast) {
-      const diffMinutes = Math.floor(diffMs / (1000 * 60));
-      const diffHours = Math.floor(diffMinutes / 60);
-      const diffDays = Math.floor(diffHours / 24);
-
-      if (diffMinutes < 60) return "Ended a few minutes ago";
-      if (diffHours < 24) return `Ended ${diffHours} hours ago`;
-      return `Happened ${diffDays} days ago`;
-    }
-
-    const futureDiff = contestDate - now;
-    if (futureDiff <= 0) return "Starts soon!";
-
-    const days = Math.floor(futureDiff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((futureDiff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((futureDiff / (1000 * 60)) % 60);
-    const seconds = Math.floor((futureDiff / 1000) % 60);
-
-    return `Starts in ${days}d ${hours}h ${minutes}m ${seconds}s`;
-  }
+    setBookmarked(bookmarks.has(contest._id));
+  }, [bookmarks]);
 
   const handleBookmark = async () => {
     const method = bookmarked ? "DELETE" : "POST";

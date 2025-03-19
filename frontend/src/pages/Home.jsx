@@ -10,6 +10,7 @@ const Home = () => {
   const { theme } = useContext(ThemeContext);
 
   const [contests, setContests] = useState([]);
+  const [ongoingContests, setOngoingContests] = useState([]);
   const [bookmarkedContests, setBookmarkedContests] = useState(new Set());
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +39,7 @@ const Home = () => {
     } catch (error) {
       console.error("Error fetching bookmarked contests:", error);
     }
-  }, []);
+  }, [user, logout]);
 
   useEffect(() => {
     const fetchContests = async () => {
@@ -61,7 +62,8 @@ const Home = () => {
         if (response.status === 401) return logout();
 
         const data = await response.json();
-        setContests(data.contests);
+        setContests(data.upcomingContests);
+        setOngoingContests(data.ongoingContests);
         setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Error fetching contests:", error);
@@ -70,12 +72,8 @@ const Home = () => {
     };
 
     fetchContests();
-  }, [selectedPlatforms, currentPage]);
-
-  // Fetch bookmarked contests
-  useEffect(() => {
     fetchBookmarkedContests();
-  }, []);
+  }, [selectedPlatforms, currentPage, fetchBookmarkedContests, user, logout]);
 
   return (
     <div
@@ -85,12 +83,32 @@ const Home = () => {
           : "bg-gray-100 text-gray-900"
       }`}
     >
-      <h2 className="text-2xl font-bold mb-4">Upcoming Contests</h2>
-
+      {/* Platform Filter */}
       <PlatformFilter
         selectedPlatforms={selectedPlatforms}
         togglePlatform={togglePlatform}
       />
+
+      {/* Ongoing Contests Section */}
+      {ongoingContests.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4">Ongoing Contests</h2>
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {ongoingContests.map((contest) => (
+              <ContestCard
+                key={contest._id}
+                contest={contest}
+                bookmarks={bookmarkedContests}
+                fetchBookmarkedContests={fetchBookmarkedContests}
+                isOngoing={true}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Contests Section */}
+      <h2 className="text-2xl font-bold mb-4">Upcoming Contests</h2>
 
       {loading ? (
         <div className="text-center text-gray-400">Loading contests...</div>
@@ -117,6 +135,7 @@ const Home = () => {
             )}
           </div>
 
+          {/* Pagination */}
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}

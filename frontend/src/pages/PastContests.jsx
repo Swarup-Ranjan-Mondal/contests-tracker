@@ -40,7 +40,6 @@ const PastContests = () => {
     }
   }, []);
 
-  // Fetch past contests
   useEffect(() => {
     const fetchContests = async () => {
       setLoading(true);
@@ -74,12 +73,8 @@ const PastContests = () => {
     };
 
     fetchContests();
-  }, [selectedPlatforms, page]);
-
-  // Fetch bookmarked contests
-  useEffect(() => {
     fetchBookmarkedContests();
-  }, []);
+  }, [selectedPlatforms, page, fetchBookmarkedContests, user, logout]);
 
   return (
     <div
@@ -89,13 +84,12 @@ const PastContests = () => {
           : "bg-gray-100 text-gray-900"
       }`}
     >
-      <h2 className="text-2xl font-bold mb-4">Past Contests</h2>
-
       <PlatformFilter
         selectedPlatforms={selectedPlatforms}
         togglePlatform={togglePlatform}
       />
 
+      <h2 className="text-2xl font-bold mb-4">Past Contests</h2>
       {loading ? (
         <div className="text-center text-gray-400">Loading contests...</div>
       ) : (

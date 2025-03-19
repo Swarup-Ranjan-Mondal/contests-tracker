@@ -7,7 +7,7 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Fetch upcoming contests with pagination
+// Fetch ongoing and upcoming contests with pagination
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const { platform, page = 1, limit = 10 } = req.query;
@@ -16,20 +16,30 @@ router.get('/', authMiddleware, async (req, res) => {
     const pageNumber = parseInt(page, 10);
     const limitNumber = parseInt(limit, 10);
 
-    const filter = {
+    const platformFilter = platform ? { platform: { $in: platform.split(',') } } : {};
+
+    // Fetch ongoing contests
+    const ongoingContests = await Contest.find({
+      startTime: { $lte: currentTime },
+      endTime: { $gte: currentTime },
+      ...platformFilter,
+    }).sort({ startTime: 1 });
+
+    // Fetch upcoming contests with pagination
+    const upcomingFilter = {
       startTime: { $gte: currentTime },
-      ...(platform ? { platform: { $in: platform.split(',') } } : {}),
+      ...platformFilter,
     };
 
-    const totalContests = await Contest.countDocuments(filter);
+    const totalContests = await Contest.countDocuments(upcomingFilter);
     const totalPages = Math.ceil(totalContests / limitNumber);
 
-    const contests = await Contest.find(filter)
+    const upcomingContests = await Contest.find(upcomingFilter)
       .sort({ startTime: 1 })
       .skip((pageNumber - 1) * limitNumber)
       .limit(limitNumber);
 
-    res.json({ contests, totalPages, currentPage: pageNumber });
+    res.json({ ongoingContests, upcomingContests, totalPages, currentPage: pageNumber });
   } catch (error) {
     console.error('Error fetching contests:', error);
     res.status(500).json({ error: 'Server Error' });
@@ -45,7 +55,7 @@ router.get('/past', authMiddleware, async (req, res) => {
     const limitNumber = parseInt(limit, 10);
 
     const filter = {
-      startTime: { $lt: new Date() },
+      endTime: { $lt: new Date() },
       ...(platform ? { platform: { $in: platform.split(',') } } : {}),
     };
 
