@@ -15,6 +15,7 @@ async function executeTask() {
 }
 
 // Run the function every 6 hours using cron
+executeTask();
 cron.schedule("0 */6 * * *", async () => {
   console.log("⏳ Running scheduled task to update contests...");
   await executeTask();
