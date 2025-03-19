@@ -5,9 +5,9 @@ A web application that helps competitive programmers track upcoming and past con
 <p align="center">
   <span>
     <img src="https://assets.codeforces.com/users/kguseva/comments/cf.png" alt="Codeforces Logo" width="150" />
-    &nbsp;&nbsp;&nbsp;&nbsp; <!-- Space between logos -->
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <img src="https://cdn.codechef.com/sites/all/themes/abessive/cc-logo.png" alt="CodeChef Logo" width="150" />
-    &nbsp;&nbsp;&nbsp;&nbsp; <!-- Space between logos -->
+    &nbsp;&nbsp;&nbsp;&nbsp;
     <img src="https://cdn-images-1.medium.com/max/1600/1*gBkMCGTAdSk4tu17SCa7RQ.png" alt="LeetCode Logo" width="150" />
   </span>
 </p>
@@ -80,7 +80,7 @@ Middleware ensures secure and authenticated access to protected routes using **J
 
 ## 📌 **Contests Scraper** (`contests-scrapper/`)  
 
-The **Contests Scraper** is responsible for **fetching contest data** from various coding platforms and storing it in the database. It ensures that users have access to the latest and most accurate contest information.  
+The **Contests Scraper** is a microservice that is responsible for **fetching contest data** from various coding platforms and storing it in the database. It ensures that users have access to the latest and most accurate contest information.
 
 > Supported Platforms:  
 > ✅ **Codeforces**  
@@ -112,7 +112,7 @@ Each platform has a dedicated scraper responsible for extracting contest data us
 
 ### 🕰️ **Automated Scheduling**  
 
-The scraper service uses **Node.js Cron Jobs**, which can be configured to run at regular intervals. This ensures the contest database stays up-to-date.  
+The scraper service uses **Node.js Cron Jobs** to keep the contest database up-to-date by running every 6 hours. It operates in the background using PM2, and the interval can be easily adjusted for timely updates.
 
 ## 📌 **Frontend** (`frontend/`)  
 
@@ -148,7 +148,7 @@ The app uses **React Context API** for state management, ensuring a seamless use
 
 ## 📌 **YouTube Playlist Fetcher** (`yt-playlist-fetcher/`)  
 
-The **YouTube Playlist Fetcher** is responsible for **fetching video solutions** from curated YouTube playlists. It intelligently matches these videos with their respective **past contests** using efficient algorithms. This feature helps users find reliable video solutions quickly.  
+The **YouTube Playlist Fetcher** is a microservice that is responsible for **fetching video solutions** from curated YouTube playlists. It intelligently matches these videos with their respective **past contests** using efficient algorithms. This feature helps users find reliable video solutions quickly.  
 
 > Platforms Supported for Video Matching:  
 > ✅ **Codeforces**  
@@ -192,9 +192,10 @@ Specialized comparators efficiently **match contests with video solutions** usin
 
 ### 🕰️ **Automated Scheduling**  
 
-The scraper service uses **Node.js Cron Jobs** to automate video fetching. It can be configured to run at regular intervals to ensure:  
+The scraper service uses **Node.js Cron Jobs** to fetch YouTube Video URLs from playlists automatically. It runs every **6 hours** to keep the database updated and operates in the background using **pm2**. The interval can be adjusted to run at specific desired intervals to ensure:
+
 - ✅ **The contest database stays up-to-date**  
-- ✅ **Videos are fetched as soon as they are available**  
+- ✅ **Video links are fetched as soon as they are available**  
 - ✅ **Manual intervention is minimized**  
 
 Once a solution video is uploaded, the system will **automatically fetch and link it** to the respective contest without requiring any manual effort.
