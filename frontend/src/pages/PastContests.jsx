@@ -84,19 +84,29 @@ const PastContests = () => {
           : "bg-gray-100 text-gray-900"
       }`}
     >
+      {/* Platform Filter */}
       <PlatformFilter
         selectedPlatforms={selectedPlatforms}
         togglePlatform={togglePlatform}
       />
 
+      {/* Past Contests Section */}
       <h2 className="text-2xl font-bold mb-4">Past Contests</h2>
       {loading ? (
-        <div className="text-center text-gray-400">Loading contests...</div>
+        <div className="flex justify-center items-center h-100">
+          <div
+            className={`text-center text-xl font-semibold ${
+              theme === "dark" ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
+            Loading contests...
+          </div>
+        </div>
       ) : (
         <>
-          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            {contests.length > 0 ? (
-              contests.map((contest) => (
+          {contests.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+              {contests.map((contest) => (
                 <ContestCard
                   key={contest._id}
                   contest={contest}
@@ -104,18 +114,21 @@ const PastContests = () => {
                   bookmarks={bookmarkedContests}
                   fetchBookmarkedContests={fetchBookmarkedContests}
                 />
-              ))
-            ) : (
+              ))}
+            </div>
+          ) : (
+            <div className="flex justify-center items-center h-100">
               <p
-                className={`text-center ${
+                className={`text-center text-xl font-semibold ${
                   theme === "dark" ? "text-gray-400" : "text-gray-600"
                 }`}
               >
                 No past contests found.
               </p>
-            )}
-          </div>
+            </div>
+          )}
 
+          {/* Pagination */}
           {totalPages > 1 && (
             <Pagination
               currentPage={page}

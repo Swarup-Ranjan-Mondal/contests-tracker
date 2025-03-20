@@ -24,7 +24,7 @@ A web application that helps competitive programmers track upcoming and past con
 ## 🎥 **Project Walkthrough Video**
 
 <p align="center">
-  <a href="https://drive.google.com/file/d/1kLOQIPR0KEIOSD4jKhlWLDwzdwDC8-p_/view?usp=sharing" target="_blank">
+  <a href="https://drive.google.com/file/d/1fxsXUY2CP7dZCSOMaTolfJp3nD9rG5Zb/view?usp=sharing" target="_blank">
     <img src="https://drive.google.com/thumbnail?id=1uh7UGg8g0lH31qEMyiB7MkBMMQK5yUg_" alt="Watch Product Walkthrough Video" width="600"/>
   </a>
 </p>
