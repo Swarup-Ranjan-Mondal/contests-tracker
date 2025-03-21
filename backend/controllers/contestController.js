@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import Contest from '../models/Contest.js';
 import User from '../models/User.js';
+import Bookmark from '../models/Bookmark.js';
 
 // Fetch ongoing and upcoming contests with pagination
 export const getContests = async (req, res) => {
@@ -16,7 +17,7 @@ export const getContests = async (req, res) => {
       startTime: { $lte: currentTime },
       endTime: { $gte: currentTime },
       ...platformFilter,
-    }).sort({ startTime: 1 });
+    }).sort({ startTime: 1 }).lean();
 
     const upcomingFilter = { startTime: { $gte: currentTime }, ...platformFilter };
     const totalContests = await Contest.countDocuments(upcomingFilter);
@@ -25,7 +26,8 @@ export const getContests = async (req, res) => {
     const upcomingContests = await Contest.find(upcomingFilter)
       .sort({ startTime: 1 })
       .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber);
+      .limit(limitNumber)
+      .lean();
 
     res.json({ ongoingContests, upcomingContests, totalPages, currentPage: pageNumber });
   } catch (error) {
@@ -50,9 +52,10 @@ export const getPastContests = async (req, res) => {
     const totalPages = Math.ceil(totalContests / limitNumber);
 
     const contests = await Contest.find(filter)
-      .sort({ startTime: -1 })
+      .sort({ startTime: -1 }) // Recent first
       .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber);
+      .limit(limitNumber)
+      .lean();
 
     res.json({ contests, totalPages, currentPage: pageNumber });
   } catch (error) {
@@ -60,7 +63,7 @@ export const getPastContests = async (req, res) => {
   }
 };
 
-// Bookmark a contest
+// Bookmark a contest using Bookmark collection
 export const bookmarkContest = async (req, res) => {
   try {
     const { contestId } = req.body;
@@ -70,37 +73,50 @@ export const bookmarkContest = async (req, res) => {
       return res.status(400).json({ error: 'Invalid Contest ID' });
     }
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const contestExists = await Contest.findById(contestId);
+    if (!contestExists) return res.status(404).json({ error: 'Contest not found' });
 
-    const objectIdContestId = new mongoose.Types.ObjectId(contestId);
-    if (!user.bookmarks.some(id => id.equals(objectIdContestId))) {
-      user.bookmarks.push(objectIdContestId);
-      await user.save();
-    }
+    const existingBookmark = await Bookmark.findOne({ userId, contestId });
+    if (existingBookmark) return res.status(400).json({ error: 'Contest already bookmarked' });
 
-    res.json({ message: 'Contest bookmarked successfully', bookmarks: user.bookmarks });
+    await Bookmark.create({ userId, contestId });
+    res.json({ message: 'Contest bookmarked successfully' });
   } catch (error) {
+    console.error('Error bookmarking contest:', error);
     res.status(500).json({ error: 'Server Error' });
   }
 };
 
-// Get Bookmarked Contests
+// Get bookmarked contests using Bookmark collection
 export const getBookmarkedContests = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const user = await User.findById(userId).populate({ path: 'bookmarks', model: 'Contest' });
 
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    // Fetch bookmarks with contests populated
+    const bookmarks = await Bookmark.find({ userId })
+      .populate({
+        path: 'contestId',
+        select: 'name platform url startTime endTime youtube_url'
+      })
+      .lean();
 
-    res.json(user.bookmarks);
+    // Handle no bookmarks scenario
+    if (bookmarks.length === 0) {
+      return res.status(200).json({ message: 'No bookmarked contests found', contests: [] });
+    }
+
+    // Extract contests from bookmarks
+    const contests = bookmarks.map(bookmark => bookmark.contestId);
+
+    res.status(200).json({ contests });
   } catch (error) {
-    console.error('Error fetching bookmarks:', error);
+    console.error('Error fetching bookmarked contests:', error);
     res.status(500).json({ error: 'Server Error' });
   }
 };
 
-// Remove a bookmarked contest
+
+// Remove a bookmarked contest using Bookmark collection
 export const removeBookmark = async (req, res) => {
   try {
     const { contestId } = req.body;
@@ -110,14 +126,10 @@ export const removeBookmark = async (req, res) => {
       return res.status(400).json({ error: 'Invalid Contest ID' });
     }
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const deletedBookmark = await Bookmark.findOneAndDelete({ userId, contestId });
+    if (!deletedBookmark) return res.status(404).json({ error: 'Bookmark not found' });
 
-    const objectIdContestId = new mongoose.Types.ObjectId(contestId);
-    user.bookmarks = user.bookmarks.filter((id) => !id.equals(objectIdContestId));
-    await user.save();
-
-    res.json({ message: 'Bookmark removed successfully', bookmarks: user.bookmarks });
+    res.json({ message: 'Bookmark removed successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Server Error' });
   }
@@ -132,7 +144,7 @@ export const getContestById = async (req, res) => {
       return res.status(400).json({ error: 'Invalid Contest ID' });
     }
 
-    const contest = await Contest.findById(contestId);
+    const contest = await Contest.findById(contestId).lean();
     if (!contest) return res.status(404).json({ error: 'Contest not found' });
 
     res.json(contest);
@@ -148,8 +160,8 @@ export const updateYoutubeLink = async (req, res) => {
     const { contestId } = req.params;
     const { youtube_url } = req.body;
 
-    let youtubeUrlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=)[\w-]+(&[\w-]+=[\w-]+)*$/;
-    
+    const youtubeUrlRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=)[\w-]+(&[\w-]+=[\w-]+)*$/;
+
     if (!youtube_url || !youtubeUrlRegex.test(youtube_url)) {
       return res.status(400).json({ error: 'Invalid YouTube URL' });
     }
@@ -158,7 +170,7 @@ export const updateYoutubeLink = async (req, res) => {
       contestId,
       { youtube_url },
       { new: true }
-    );
+    ).lean();
 
     if (!contest) {
       return res.status(404).json({ error: 'Contest not found' });
@@ -166,7 +178,7 @@ export const updateYoutubeLink = async (req, res) => {
 
     res.json({ message: 'YouTube link updated successfully', contest });
   } catch (error) {
-    console.error("Error updating YouTube link:", error);
+    console.error('Error updating YouTube link:', error);
     res.status(500).json({ error: 'Server Error' });
   }
 };

@@ -34,8 +34,8 @@ const Home = () => {
       });
       if (response.status === 401) return logout();
 
-      const bookmarks = await response.json();
-      setBookmarkedContests(new Set(bookmarks.map((contest) => contest._id)));
+      const bookmarkedData = await response.json();
+      setBookmarkedContests(new Set(bookmarkedData.contests.map((contest) => contest._id)));
     } catch (error) {
       console.error("Error fetching bookmarked contests:", error);
     }
