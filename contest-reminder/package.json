@@ -1,5 +1,5 @@
 {
-  "name": "contests-scrapper",
+  "name": "contest-reminder",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
@@ -11,13 +11,15 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "dependencies": {
+    "bullmq": "^5.44.1",
+    "dotenv": "^16.4.7",
+    "ioredis": "^5.6.0",
+    "mongoose": "^8.12.2",
+    "nodemailer": "^6.10.0",
+    "redis": "^4.7.0"
+  },
   "devDependencies": {
     "nodemon": "^3.1.9"
-  },
-  "dependencies": {
-    "axios": "^1.8.3",
-    "dotenv": "^16.4.7",
-    "mongoose": "^8.12.1",
-    "node-cron": "^3.0.3"
   }
 }

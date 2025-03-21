@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Contest from '../models/Contest.js';
-import User from '../models/User.js';
 import Bookmark from '../models/Bookmark.js';
+import bookmarkQueue from '../queues/bookmarkQueue.js';
 
 // Fetch ongoing and upcoming contests with pagination
 export const getContests = async (req, res) => {
@@ -80,7 +80,11 @@ export const bookmarkContest = async (req, res) => {
     if (existingBookmark) return res.status(400).json({ error: 'Contest already bookmarked' });
 
     await Bookmark.create({ userId, contestId });
-    res.json({ message: 'Contest bookmarked successfully' });
+
+    // Publish the event to the queue
+    await bookmarkQueue.add('contest_bookmarked', { userId, contestId });
+
+    res.json({ message: 'Contest bookmarked and event published' });
   } catch (error) {
     console.error('Error bookmarking contest:', error);
     res.status(500).json({ error: 'Server Error' });

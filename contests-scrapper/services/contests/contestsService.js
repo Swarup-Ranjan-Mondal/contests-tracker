@@ -2,6 +2,7 @@ import fetchCodeforcesContests from "../../scrapers/codeforcesScraper.js";
 import fetchCodeChefContests from "../../scrapers/codechefScraper.js";
 import fetchLeetcodeContests from "../../scrapers/leetcodeScraper.js";
 import Contest from "../../models/Contest.js";
+import Bookmark from "../../models/Bookmark.js";
 
 const contestsService = async () => {
   try {
@@ -92,7 +93,8 @@ const contestsService = async () => {
 
     // Clear existing contests in the database
     await Contest.deleteMany({});
-    console.log("🗑️ Existing contests deleted.");
+    await Bookmark.deleteMany({});
+    console.log("🗑️ Existing contests and bookmarks deleted.");
 
     // Insert new contests
     await Contest.insertMany(allContests);
